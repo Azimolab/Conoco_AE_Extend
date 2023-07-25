@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 400;
+  font-style: normal;
+  src: url("Montserrat-Regular.ttf") format("truetype");
+}
+
+* {
+  font-family: Montserrat;
+}
+
+html {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 10px;
+}
+
+#compPreviewContainer {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+#compPreview {
+  max-width: 100%;
+  max-height: 100%;
+}
+#frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+  cursor: move;
+}

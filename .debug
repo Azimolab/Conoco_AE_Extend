@@ -1,0 +1,8 @@
+<ExtensionList>
+    <Extension Id="com.Conoco_AE_Extend">
+       <HostList>
+           /* I’m using Photoshop */
+          <Host Name="AEFT" Port="8710"/>
+        </HostList>
+    </Extension>
+</ExtensionList>
