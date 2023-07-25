@@ -139,26 +139,48 @@ function osCheck() {
   return userOS;
 }
 
-function getCompNames() {
-  var compNames = [];
-  for (var i = 1; i <= app.project.numItems; i++) {
-    if (app.project.item(i) instanceof CompItem) {
-      compNames.push(app.project.item(i).name);
+function addComp(compName) {
+  var myComp = getCompByName(compName);
+  if (myComp != null) {
+    var newComp = app.project.items.addComp("New Composition", myComp.width, myComp.height, myComp.pixelAspect, myComp.duration, myComp.frameRate);
+    for (var i = 1; i <= myComp.numLayers; i++) {
+      var myLayer = myComp.layer(i);
+      var newLayer = myLayer.duplicate();
+      newLayer.moveToComp(newComp);
     }
+    return "success";
+  } else {
+    return "failure";
   }
-  return JSON.stringify(compNames);
 }
 
-function addCompWithImage(compName, imagePath) {
-  var compWidth = 1920; // Altere para a largura desejada
-  var compHeight = 1080; // Altere para a altura desejada
-  var pixelAspect = 1; // Altere para a proporção de aspecto de pixel desejada
-  var compTime = 30; // Altere para a duração desejada
-  var compFrameRate = 30; // Altere para a taxa de quadros desejada
+function getCompByName(name) {
+  var i, item;
+  for (i = 1; i <= app.project.numItems; i++) {
+    item = app.project.item(i);
+    if (item instanceof CompItem && item.name === name) {
+      return item;
+    }
+  }
+  return null;
+}
 
-  var newComp = app.project.items.addComp(compName, compWidth, compHeight, pixelAspect, compTime, compFrameRate);
+function copyToNewComp(compName, width, height) {
+  var comp = getCompByName(compName);
+  if (!comp) {
+    alert("No composition named " + compName);
+    return;
+  }
 
-  var newFootage = app.project.importFile(new ImportOptions(new File(imagePath)));
+  var newComp = app.project.items.addComp("New " + compName, width, height, comp.pixelAspect, comp.duration, comp.frameRate);
 
-  newComp.layers.add(newFootage);
+  app.beginUndoGroup("Duplicate Layers to New Comp");
+  for (var i = 1; i <= comp.numLayers; i++) {
+    var layer = comp.layer(i);
+    var duplicatedLayer = layer.duplicate();
+    duplicatedLayer.moveToEnd(newComp);
+  }
+  app.endUndoGroup();
+
+  return newComp.name;
 }

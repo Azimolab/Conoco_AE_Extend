@@ -29,14 +29,48 @@
   <body scroll="no">
     <body>
       <h1>My Extension</h1>
-      <select id="compDropdown">
-        <!-- As composições serão adicionadas aqui pelo JavaScript -->
-      </select>
+      <div class="container">
+        <h1>RoadMap to Learn MERN Stack</h1>
+
+        <select name="" id="first">
+          <option value="">Select Option</option>
+        </select>
+
+        <select name="" id="second">
+          <option value="">Select Option</option>
+        </select>
+
+        <select name="" id="third">
+          <option value="">Select Option</option>
+        </select>
+      </div>
+
+      <select id="compDropdown"></select>
       <div id="compPreviewContainer">
         <img id="compPreview" />
         <div id="frame"></div>
       </div>
       <p id="frameCoords"></p>
+
+      <!-- <button id="copyCompButton">Copy to new comp</button> -->
+
+      <div>
+        <img id="image" src="./assets/Motif_Blue_End_Fuchsia.png" />
+      </div>
+      <button id="addCompButton">Adicionar composição</button>
+       <div class="container">
+    <h1>Minimum and maximum cropped dimensions</h1>
+    <h3>Image</h3>
+    <div>
+      <img id="image" src="../images/picture.jpg" alt="Picture">
+    </div>
+    <p>Maximum Width: 640, Maximum Height: 320, Minimum Width: 320, Minimum Height: 160</p>
+    <p>Data: <span id="data"></span></p>
+    <h3>Result</h3>
+    <p>
+      <button type="button" id="button">Crop</button>
+    </p>
+    <div id="result"></div>
     </body>
 
     <!-- <script>
@@ -55,6 +89,8 @@
         return os;
       }
     </script> -->
+    <link href="css/cropper.css" rel="stylesheet" />
+    <script src="js/libs/cropper.js"></script>
     <script src="js/libs/CSInterface.js"></script>
     <script src="js/main.js"></script>
   </body>
