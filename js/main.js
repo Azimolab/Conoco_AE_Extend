@@ -14,6 +14,7 @@
   const switch_alpha = document.getElementById("switch_alpha"); // Botão Export
   const movRadio = document.getElementById("MOV_file");
   const mp4Radio = document.getElementById("MP4_file");
+  const resolution = document.getElementById("resolution_select");
 
   let cropper;
   var csInterface = new CSInterface();
@@ -67,62 +68,42 @@
     return arr.reduce((prev, curr) => (Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev));
   }
   const AR = {
-    "16:9": { x: 0, y: 0, width: 1920, aspectRatio: 1.7788 },
-    "9:16": { x: 0, y: 0, width: 607, aspectRatio: 0.5625 },
-    "2:3": { x: 0, y: 0, width: 720, aspectRatio: 0.6666 },
-    "4:3": { x: 0, y: 0, width: 1440, aspectRatio: 1.333 },
-    "21:9": { x: 0, y: 0, width: 1920, aspectRatio: 2.333 },
-    "9:21": { x: 0, y: 0, width: 463, aspectRatio: 0.4285 },
+    "16:9": { x: 0, y: 0, width: 1920, aspectRatio: 16 / 9 },
+    "9:16": { x: 0, y: 0, width: 607, aspectRatio: 9 / 16 },
+    "2:3": { x: 0, y: 0, width: 720, aspectRatio: 2 / 3 },
+    "4:3": { x: 0, y: 0, width: 1440, aspectRatio: 4 / 3 },
+    "21:9": { x: 0, y: 0, width: 1920, aspectRatio: 21 / 9 },
+    "9:21": { x: 0, y: 0, width: 463, aspectRatio: 9 / 21 },
     "1:1": { x: 0, y: 0, width: 1080, aspectRatio: 1 },
   };
 
   const AR4 = {
-    "16:9": { x: 140, y: 279, width: 398, aspectRatio: 1.7788 },
-    "9:16": { x: 260, y: 0, width: 292, aspectRatio: 0.5625 },
-    "2:3": { x: 172, y: 280, width: 137, aspectRatio: 0.6666666666666667 },
-    "4:3": { x: 128, y: 216, width: 378, aspectRatio: 1.333333333333333 },
-    "21:9": { x: 157, y: 316, width: 434, aspectRatio: 2.333333333333333 },
-    "9:21": { x: 116, y: 72, width: 229, aspectRatio: 0.4285714285714286 },
+    "16:9": { x: 140, y: 279, width: 398, aspectRatio: 16 / 9 },
+    "9:16": { x: 260, y: 0, width: 292, aspectRatio: 9 / 16 },
+    "2:3": { x: 172, y: 280, width: 137, aspectRatio: 2 / 3 },
+    "4:3": { x: 128, y: 216, width: 378, aspectRatio: 4 / 3 },
+    "21:9": { x: 157, y: 316, width: 434, aspectRatio: 21 / 9 },
+    "9:21": { x: 116, y: 72, width: 229, aspectRatio: 9 / 21 },
     "1:1": { x: 304, y: 269, width: 232, aspectRatio: 1 },
   };
 
-  // const AR2 = {
-  //   "16:9": { x: 0, y: 0, width: 1920, aspectRatio: 1.7777777777777777 },
-  //   "9:16": { x: 878, y: 0, width: 580, aspectRatio: 0.5625 },
-  //   "2:3": { x: 778, y: 0, width: 700, aspectRatio: 0.6666666666666667 },
-  //   "4:3": { x: 480, y: 0, width: 1440, aspectRatio: 1.333333333333333 },
-  //   "21:9": { x: 0, y: 0, width: 2550, aspectRatio: 2.333333333333333 },
-  //   "9:21": { x: 1000, y: 0, width: 463, aspectRatio: 0.4285714285714286 },
-  //   "1:1": { x: 400, y: 0, width: 1080, aspectRatio: 1 },
-  // };
-
   const AR2 = {
-    "16:9": { x: 0, y: 168, width: 467, aspectRatio: 1.7788 },
-    "9:16": { x: 216, y: 141, width: 145, aspectRatio: 0.5625 },
-    "2:3": { x: 158, y: 133, width: 181, aspectRatio: 0.6666666666666667 },
-    "4:3": { x: 0, y: 120, width: 416, aspectRatio: 1.333333333333333 },
-    "21:9": { x: 0, y: 160, width: 670, aspectRatio: 2.333333333333333 },
-    "9:21": { x: 220, y: 119, width: 118, aspectRatio: 0.4285714285714286 },
+    "16:9": { x: 0, y: 168, width: 467, aspectRatio: 16 / 9 },
+    "9:16": { x: 216, y: 141, width: 145, aspectRatio: 9 / 16 },
+    "2:3": { x: 158, y: 133, width: 181, aspectRatio: 2 / 3 },
+    "4:3": { x: 0, y: 120, width: 416, aspectRatio: 4 / 3 },
+    "21:9": { x: 0, y: 160, width: 670, aspectRatio: 21 / 9 },
+    "9:21": { x: 220, y: 119, width: 118, aspectRatio: 9 / 21 },
     "1:1": { x: 108, y: 154, width: 287, aspectRatio: 1 },
   };
 
-  // const AR3 = {
-  //   "16:9": { x: 366, y: 271, width: 381, aspectRatio: 1.7777777777777777 },
-  //   "9:16": { x: 446, y: 93, width: 217, aspectRatio: 0.5625 },lock
-  //   "2:3": { x: 443, y: 157, width: 214, aspectRatio: 0.6666666666666667 },
-  //   "4:3": { x: 350, y: 166, width: 397, aspectRatio: 1.333333333333333 },
-  //   "21:9": { x: 354, y: 302, width: 393, aspectRatio.png: 2.333333333333333 },
-  //   "9:21": { x: 446, y: 67, width: 217, aspectRatio: 0.4285714285714286 },
-  //   "1:1": { x: 362, y: 93, width: 385, aspectRatio: 1 },
-  // };
-
   const AR3 = {
-    "16:9": { x: 370, y: 234, width: 381, aspectRatio: 1.7788 },
-    "9:16": { x: 446, y: 56, width: 217, aspectRatio: 0.5625 },
-    "2:3": { x: 443, y: 120, width: 214, aspectRatio: 0.6666666666666667 },
-    "4:3": { x: 370, y: 130, width: 397, aspectRatio: 1.333333333333333 },
-    "21:9": { x: 370, y: 265, width: 393, aspectRatio: 2.333333333333333 },
-    "9:21": { x: 446, y: 29, width: 217, aspectRatio: 0.4285714285714286 },
+    "16:9": { x: 370, y: 234, width: 381, aspectRatio: 16 / 9 },
+    "9:16": { x: 446, y: 56, width: 217, aspectRatio: 9 / 16 },
+    "2:3": { x: 443, y: 120, width: 214, aspectRatio: 2 / 3 },
+    "4:3": { x: 370, y: 130, width: 397, aspectRatio: 4 / 3 },
+    "21:9": { x: 370, y: 265, width: 393, aspectRatio: 21 / 9 },
+    "9:21": { x: 446, y: 29, width: 217, aspectRatio: 9 / 21 },
     "1:1": { x: 370, y: 53, width: 385, aspectRatio: 1 },
   };
 
@@ -333,7 +314,7 @@
     image.onload = function () {
       image.classList.add("fade");
       const cropData = imageData.data[aspectRatio];
-      const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.9;
+      const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 1;
       console.log(cropScale);
       console.log(cropData);
       cropper = new Cropper(image, {
@@ -349,16 +330,16 @@
         },
         ready: function () {
           let cropData = imageData.data[aspectRatio];
-          const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.9;
+          const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 1;
 
           let newWidth = cropData.width * cropScale;
           let newHeight = (cropData.width * cropScale) / cropData.aspectRatio;
 
-          // If lock is false and cropOption is "100%" or "200%", center the crop area
-          if (!lock && (cropOption === "100%" || cropOption === "200%")) {
-            cropData.x = (image.naturalWidth - newWidth) / 2;
-            cropData.y = (image.naturalHeight - newHeight) / 2;
-          }
+          // // If lock is false and cropOption is "100%" or "200%", center the crop area
+          // if (!lock && (cropOption === "100%" || cropOption === "200%")) {
+          //   cropData.x = (image.naturalWidth - newWidth) / 2;
+          //   cropData.y = (image.naturalHeight - newHeight) / 2;
+          // }
 
           cropper.setData({
             x: cropData.x,
@@ -515,6 +496,7 @@
       const aspectRatio = this.value;
       const lock = chosenData.lock;
       const cropOption = crop_select.value;
+      console.log(aspectRatio);
       checkAlpha();
       initCropper(chosenData, aspectRatio, lock, cropOption);
     };
@@ -551,6 +533,12 @@
       initCropper(selectedData, aspectRatio, lock, cropOption);
     };
 
+    resolution_select.onchange = function () {
+      // Actions to be performed on resolution change can be added here
+      console.log("Resolution changed to: " + this.value);
+      // For now, just logging the change to the console
+    };
+
     style.onchange(); // Populate the dropdowns on page load
 
     // csInterface.evalScript("testFunction()");
@@ -565,7 +553,6 @@
 
       // Transforma o objeto cropData no formato desejado
       const cropData = JSON.parse(data.textContent);
-      const newWidth = 1920;
 
       const roi = {
         x: cropData.x,
@@ -579,13 +566,16 @@
         version: version.value,
         colorScheme: color_scheme.value,
         cropSelect: crop_select.value,
+        resolution: resolution.value,
+        ar: document.getElementById("aspect_ratio_select").value,
         alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
-        newWidth: newWidth,
       };
 
       alert("Valores coletados. Enviando para o script JSX...");
+
+      alert(document.getElementById("aspect_ratio_select").value);
       // Envia o objeto para o script JSX
       csInterface.evalScript(`duplicatePrecompToOutput(${JSON.stringify(values)})`);
     }
