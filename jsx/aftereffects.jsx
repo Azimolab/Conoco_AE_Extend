@@ -56,6 +56,14 @@ function adjustLayerPositions(comp, xOffset, yOffset) {
   }
 }
 
+function openComposition(comp) {
+  if (comp && comp instanceof CompItem) {
+    comp.openInViewer();
+  } else {
+    alert("Erro ao abrir a composição.");
+  }
+}
+
 function duplicatePrecompToOutput(values) {
   alert("Iniciando função duplicatePrecompToOutput no script JSX...");
 
@@ -123,6 +131,8 @@ function duplicatePrecompToOutput(values) {
   ScaleCompositionByWidth(duplicatedPrecomp, resolution);
 
   alert("Pré-composição '" + precompName + "' foi duplicada, estendida para " + customDuration + " segundos e movida para a pasta 'Output'!");
+
+  openComposition(duplicatedPrecomp);
 }
 
 function ScaleCompositionByWidth(compToScale, newWidth) {
