@@ -565,6 +565,8 @@
 
       // Transforma o objeto cropData no formato desejado
       const cropData = JSON.parse(data.textContent);
+      const newWidth = 1920;
+
       const roi = {
         x: cropData.x,
         y: cropData.y,
@@ -580,6 +582,7 @@
         alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
+        newWidth: newWidth,
       };
 
       alert("Valores coletados. Enviando para o script JSX...");

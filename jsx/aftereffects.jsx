@@ -470,7 +470,7 @@ function duplicatePrecompToOutput(values) {
   }
 
   // Verifica se CheckAlpha é true e oculta as camadas com o nome "AlphaTrue"
-  var CheckAlpha = false; // Defina esta variável conforme necessário
+  var CheckAlpha = true; // Defina esta variável conforme necessário
   if (CheckAlpha) {
     hideLayersByName(duplicatedPrecomp, "AlphaTrue");
   }
@@ -482,11 +482,80 @@ function duplicatePrecompToOutput(values) {
   if (!outputFolder) {
     outputFolder = app.project.items.addFolder("Output");
   }
+
   duplicatedPrecomp.parentFolder = outputFolder;
+
+  ScaleCompositionByWidth(duplicatedPrecomp, 1920);
 
   alert("Pré-composição '" + precompName + "' foi duplicada, estendida para " + customDuration + " segundos e movida para a pasta 'Output'!");
 }
 
+function ScaleCompositionByWidth(compToScale, newWidth) {
+  if (!compToScale || !(compToScale instanceof CompItem)) {
+    alert("Composição não fornecida ou inválida.");
+    return;
+  }
+
+  var scale_factor = newWidth / compToScale.width;
+
+  app.beginUndoGroup("Scale Composition By Width");
+
+  // Create a null 3D layer.
+  var null3DLayer = compToScale.layers.addNull();
+  null3DLayer.threeDLayer = true;
+
+  // Set its position to (0,0,0).
+  null3DLayer.position.setValue([0, 0, 0]);
+
+  // Set null3DLayer as parent of all layers that don't have parents.
+  makeParentLayerOfAllUnparented(compToScale, null3DLayer);
+
+  // Set new comp width and height.
+  compToScale.width = Math.floor(compToScale.width * scale_factor);
+  compToScale.height = Math.floor(compToScale.height * scale_factor);
+
+  // Then for all cameras, scale the Zoom parameter proportionately.
+  scaleAllCameraZooms(compToScale, scale_factor);
+
+  // Set the scale of the super parent null3DLayer proportionately.
+  var superParentScale = null3DLayer.scale.value;
+  superParentScale[0] = superParentScale[0] * scale_factor;
+  superParentScale[1] = superParentScale[1] * scale_factor;
+  superParentScale[2] = superParentScale[2] * scale_factor;
+  null3DLayer.scale.setValue(superParentScale);
+
+  // Delete the super parent null3DLayer with dejumping enabled.
+  null3DLayer.remove();
+
+  app.endUndoGroup();
+}
+function makeParentLayerOfAllUnparented(theComp, newParent) {
+  for (var i = 1; i <= theComp.numLayers; i++) {
+    var curLayer = theComp.layer(i);
+    if (curLayer != newParent && curLayer.parent == null) {
+      curLayer.parent = newParent;
+    }
+  }
+}
+
+function scaleAllCameraZooms(theComp, scaleBy) {
+  for (var i = 1; i <= theComp.numLayers; i++) {
+    var curLayer = theComp.layer(i);
+    if (curLayer.matchName == "ADBE Camera Layer") {
+      var curZoom = curLayer.zoom;
+      if (curZoom.numKeys == 0) {
+        curZoom.setValue(curZoom.value * scaleBy);
+      } else {
+        for (var j = 1; j <= curZoom.numKeys; j++) {
+          curZoom.setValueAtKey(j, curZoom.keyValue(j) * scaleBy);
+        }
+      }
+    }
+  }
+}
+
+// Example usage:
+// ScaleCompositionByWidth(1920);
 // Exemplo de uso:
 // duplicatePrecompFromLibrary("Nome da Pré-composição");
 
