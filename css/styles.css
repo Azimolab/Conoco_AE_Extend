@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "Montserrat";
   font-weight: 400;
   font-style: normal;
@@ -7,40 +7,88 @@
 
 * {
   font-family: Montserrat;
-}
+} */
 
-html {
-  overflow-x: hidden;
-  overflow-y: hidden;
+body {
+  font-family: "Public Sans", sans-serif;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  padding: 10px;
+  min-width: 550px;
+  max-width: 700px;
+  margin: 0 auto;
+  /* Isso centralizará o conteúdo se a largura da janela for maior que 700px */
 }
 
-#compPreviewContainer {
+#data {
+  color: white;
+
+  /* color: #232323; */
+}
+
+#customRange1 {
+  width: 100%;
+}
+
+#sliderTicks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+#sliderTicks span {
   position: relative;
-  width: 400px;
-  height: 400px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  width: 1px;
+  background: #d3d3d3;
+  height: 5px;
+  line-height: 40px;
+  margin-top: 0px;
 }
-#compPreview {
-  max-width: 100%;
-  max-height: 100%;
-}
-#frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100px;
-  height: 100px;
-  border: 1px solid black;
-  cursor: move;
-}
-/* Ensure the size of the image fit the container perfectly */
-img {
-  display: block;
 
-  /* This rule is very important, please don't ignore this */
-  max-width: 100%;
+#sliderTicks span:before {
+  position: absolute;
+  top: -20px;
+  font-size: 10px;
+}
+
+.desabilitado {
+  color: #d3d3d3;
+  opacity: 0.1;
+  pointer-events: none; /* Desabilita eventos de clique */
+  cursor: not-allowed; /* Muda o cursor para indicar que o item está desabilitado */
+}
+
+h6 {
+  font-size: 14px; /* Mude para o tamanho de fonte que você deseja */
+  font-weight: 100;
+}
+
+p {
+  font-size: 14px; /* Mude para o tamanho de fonte que você deseja */
+  font-weight: 100;
+}
+.form-label {
+  font-size: 12px;
+  font-weight: 100;
+}
+
+.custom-btn:disabled {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.custom-btn:not(:disabled) {
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+.fade {
+  transition: opacity 4.5s;
+  opacity: 1;
+}
+.fade:not(.fade) {
+  opacity: 0;
 }
