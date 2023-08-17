@@ -548,7 +548,7 @@
     // }
     // testCommunication();
 
-    function sendValuesToJSX() {
+    function sendValuesToJSX(render, outputPath) {
       alert("Coletando valores dos elementos DOM...");
 
       // Transforma o objeto cropData no formato desejado
@@ -571,6 +571,10 @@
         alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
+        outputPath: outputPath,
+        render: render,
+        switchAlpha: switch_alpha.checked,
+        fileType: movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null,
       };
 
       alert("Valores coletados. Enviando para o script JSX...");
@@ -581,8 +585,30 @@
     }
 
     // Adiciona um evento de clique ao botão "Create Composition"
-    createCompositionBtn.addEventListener("click", sendValuesToJSX);
+    createCompositionBtn.addEventListener("click", () => sendValuesToJSX(false)); // Não renderiza
+    // exportBtn.addEventListener("click", function () {
+    //   alert("Export");
+    //   window.cep.fs.showSaveDialog("Salvar Como", "", ["*.mp4", "*.mov"], function (result) {
+    //     if (!result.err) {
+    //       const outputPath = result.data; // Este é o caminho completo escolhido pelo usuário
+    //       sendValuesToJSX(true, outputPath); // Renderiza e passa o caminho escolhido
+    //     } else {
+    //       console.error("Erro ao escolher o caminho do arquivo:", result.err);
+    //       alert("Erro ao escolher o caminho do arquivo:", result.err);
+    //     }
+    //   });
+    // });
 
+    exportBtn.addEventListener("click", function () {
+      const fileType = movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null;
+      csInterface.evalScript(`chooseOutputPath("${fileType}")`, function (outputPath) {
+        if (outputPath !== "null") {
+          sendValuesToJSX(true, outputPath);
+        } else {
+          console.log("Seleção de caminho cancelada pelo usuário.");
+        }
+      });
+    });
     // Adiciona um evento de clique ao botão "Create Composition"
   };
 })();

@@ -73,10 +73,12 @@ function duplicatePrecompToOutput(values) {
 
   var resolution = parseFloat(values.resolution);
   var roi = values.roi;
+  var render = values.render;
 
   var libraryFolder = findItemByName("Library");
 
-  alert(resolution);
+  alert(render);
+  alert(values.outputPath);
 
   if (!libraryFolder || !(libraryFolder instanceof FolderItem)) {
     alert("Pasta 'Library' não encontrada!");
@@ -113,8 +115,7 @@ function duplicatePrecompToOutput(values) {
   }
 
   // Verifica se CheckAlpha é true e oculta as camadas com o nome "AlphaTrue"
-  var CheckAlpha = true; // Defina esta variável conforme necessário
-  if (CheckAlpha) {
+  if (values.switchAlpha) {
     hideLayersByName(duplicatedPrecomp, "AlphaTrue");
   }
   // Estende a duração da composição duplicada e suas camadas para o tempo personalizado
@@ -133,6 +134,27 @@ function duplicatePrecompToOutput(values) {
   alert("Pré-composição '" + precompName + "' foi duplicada, estendida para " + customDuration + " segundos e movida para a pasta 'Output'!");
 
   openComposition(duplicatedPrecomp);
+
+  var renderSettings = {
+    timeSpan: "Work Area", // Pode ser "Work Area", "Length", ou outros conforme a documentação
+    quality: "Best",
+    resolution: "Full",
+    effects: "All On",
+    diskCache: "Use Image Cache",
+  };
+
+  var outputSettings = {
+    format: values.fileType === "mov" ? "Lossless" : "H.264",
+    channel: "RGB+Alpha",
+    destination: values.outputPath,
+    colorDepth: "Millions of Colors+", // 8-bits = "Millions of Colors", 16-bits = "Trillions of Colors", 32-bits = "Floating Point"
+    resize: false, // Se você deseja redimensionar
+    frameRate: 25,
+  };
+
+  if (values.render) {
+    renderComposition(duplicatedPrecomp, renderSettings, outputSettings);
+  }
 }
 
 function ScaleCompositionByWidth(compToScale, newWidth) {
@@ -197,6 +219,65 @@ function scaleAllCameraZooms(theComp, scaleBy) {
       }
     }
   }
+}
+
+function chooseOutputPath(fileType) {
+  var saveFile = new File();
+  var fileFilter = fileType === "mov" ? "MOV:*.mov" : "MP4:*.mp4";
+  saveFile = saveFile.saveDlg("Salvar Como", fileFilter);
+  if (saveFile != null) {
+    return saveFile.fsName; // Retorna o caminho completo escolhido pelo usuário
+  } else {
+    return null; // Usuário cancelou o diálogo
+  }
+}
+
+function renderComposition(comp, renderSettings, outputSettings) {
+  while (app.project.renderQueue.numItems > 0) {
+    app.project.renderQueue.item(1).remove();
+  }
+
+  // Verifica se a composição é válida
+  if (!comp || !(comp instanceof CompItem)) {
+    alert("Composição inválida fornecida para renderização.");
+    return;
+  }
+
+  // Adiciona a composição à fila de renderização
+  var renderQueueItem = app.project.renderQueue.items.add(comp);
+  alert("foi pra fila");
+
+  // Configura as Configurações de Renderização
+  if (renderSettings) {
+    if (renderSettings.timeSpan) renderQueueItem.timeSpan = renderSettings.timeSpan;
+
+    if (renderSettings.quality) renderQueueItem.quality = renderSettings.quality;
+
+    if (renderSettings.resolution) renderQueueItem.resolution = renderSettings.resolution;
+
+    if (renderSettings.effects) renderQueueItem.effects = renderSettings.effects;
+
+    if (renderSettings.diskCache) renderQueueItem.diskCache = renderSettings.diskCache;
+  }
+
+  // Configura as Configurações de Saída
+  var outputModule = renderQueueItem.outputModule(1);
+  if (outputSettings) {
+    if (outputSettings.format) outputModule.applyTemplate(outputSettings.format);
+    if (outputSettings.destination) outputModule.file = new File(outputSettings.destination);
+    if (outputSettings.channel) outputModule.channels = outputSettings.channel;
+
+    if (outputSettings.colorDepth) outputModule.depth = outputSettings.colorDepth;
+
+    if (outputSettings.resize) outputModule.resize = outputSettings.resize;
+
+    if (outputSettings.frameRate) outputModule.frameRate = outputSettings.frameRate;
+  }
+
+  // Inicia a renderização
+
+  app.project.renderQueue.render();
+  alert("Render Concluido");
 }
 
 //var desiredDuration = 60; // Defina a duração desejada aqui
