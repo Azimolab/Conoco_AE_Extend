@@ -9,9 +9,13 @@
   return null;
 }
 
-function deepDuplicateComp(comp) {
+function deepDuplicateComp(comp, styleSuffix) {
   // Duplica a composição
   var duplicatedComp = comp.duplicate();
+
+  if (styleSuffix) {
+    duplicatedComp.name = styleSuffix;
+  }
 
   // Itera sobre todas as camadas da composição duplicada
   for (var i = 1; i <= duplicatedComp.numLayers; i++) {
@@ -65,28 +69,60 @@ function openComposition(comp) {
 }
 
 function duplicatePrecompToOutput(values) {
-  alert("Iniciando função duplicatePrecompToOutput no script JSX...");
-
+  // alert("Iniciando função duplicatePrecompToOutput no script JSX...");
+  //  alert(values.version);
+  //
   // Use os valores do objeto para configurar a composição duplicada
-  var precompName = values.style + " " + values.version + " " + values.colorScheme;
+  var precompName = values.style + " " + values.colorScheme;
   var customDuration = parseFloat(values.duration);
 
   var resolution = parseFloat(values.resolution);
   var roi = values.roi;
   var render = values.render;
+  var aspectRatio = values.aspectRatio.replace(":", "-"); // Aqui está a mudança
+
+  //alert(aspectRatio);
 
   var libraryFolder = findItemByName("Library");
-
-  alert(render);
-  alert(values.outputPath);
 
   if (!libraryFolder || !(libraryFolder instanceof FolderItem)) {
     alert("Pasta 'Library' não encontrada!");
     return;
   }
+
+  // Procura a subpasta correta dentro da pasta "Library" com base em values.style
+  var styleFolder;
+  switch (values.style) {
+    case "Solid Mark Motif":
+      precompName = values.style + " " + values.colorScheme;
+      styleFolder = findItemByName("Solid Mark Motif", libraryFolder);
+      break;
+    case "Linear Mark Motif":
+      var firstWord = values.colorScheme.split(" ")[0];
+      // alert(firstWord);
+      precompName = values.style + " " + firstWord;
+
+      styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
+      break;
+    case "3D":
+      styleFolder = findItemByName("3D", libraryFolder);
+      break;
+    case "Ribbon":
+      styleFolder = findItemByName("Ribbon", libraryFolder);
+      break;
+  }
+
+  // alert(precompName);
+
+  if (!styleFolder || !(styleFolder instanceof FolderItem)) {
+    alert("Subpasta correspondente a '" + values.style + "' não encontrada na pasta 'Library'!");
+    return;
+  }
+
+  // Busca a composição dentro da subpasta correta
   var precompItem = null;
-  for (var i = 1; i <= libraryFolder.numItems; i++) {
-    var item = libraryFolder.item(i);
+  for (var i = 1; i <= styleFolder.numItems; i++) {
+    var item = styleFolder.item(i);
     if (item.name === precompName && item instanceof CompItem) {
       precompItem = item;
       break;
@@ -94,15 +130,22 @@ function duplicatePrecompToOutput(values) {
   }
 
   if (!precompItem) {
-    alert("Pré-composição '" + precompName + "' não encontrada na pasta 'Library'!");
+    alert("Pré-composição '" + precompName + "' não encontrada na pasta '" + values.style + "'!");
     return;
   }
 
+  var sufix = values.style + " " + values.version + " " + values.colorScheme + " " + aspectRatio;
+
   // Faz uma duplicação profunda da pré-composição
-  var duplicatedPrecomp = deepDuplicateComp(precompItem);
+  var duplicatedPrecomp = deepDuplicateComp(precompItem, sufix);
 
   if (roi) {
     // Ajusta a posição de todas as camadas com base nas coordenadas x e y da região de interesse
+
+    roi.x = Math.round(roi.x * 1.92);
+    roi.width = Math.round(roi.width * 1.92);
+    roi.y = Math.round(roi.y * 1.92);
+    roi.height = Math.round(roi.height * 1.92);
 
     adjustLayerPositions(duplicatedPrecomp, roi.x, roi.y);
 
@@ -114,10 +157,51 @@ function duplicatePrecompToOutput(values) {
     // A região de interesse começa no canto superior esquerdo após reposicionar as camadas
   }
 
-  // Verifica se CheckAlpha é true e oculta as camadas com o nome "AlphaTrue"
-  if (values.switchAlpha) {
-    hideLayersByName(duplicatedPrecomp, "AlphaTrue");
+  switch (values.style) {
+    case "Solid Mark Motif":
+      if (values.version === "Without Lines") {
+        hideLayersByName(duplicatedPrecomp, "Line 01");
+        hideLayersByName(duplicatedPrecomp, "Line 02");
+        hideLayersByName(duplicatedPrecomp, "Line 03");
+      }
+      if (values.version === "With Lines") {
+      }
+      if (values.version === "Text Frame") {
+        hideLayersByName(duplicatedPrecomp, "Line 01");
+        hideLayersByName(duplicatedPrecomp, "Line 02");
+        hideLayersByName(duplicatedPrecomp, "Line 03");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 01");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 02");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 03");
+
+        if (values.switchAlpha) {
+          hideLayersByName(duplicatedPrecomp, "bg");
+        }
+      }
+
+      break;
+    case "Linear Mark Motif":
+      var thirdWord = values.colorScheme.split(" ")[3];
+      // alert(thirdWord);
+
+      if (values.version === "Main") {
+        if (thirdWord === "White") {
+          hideLayersByName(duplicatedPrecomp, "BG - Color");
+          if (values.switchAlpha) {
+            hideLayersByName(duplicatedPrecomp, "BG - White");
+          }
+        } else {
+          hideLayersByName(duplicatedPrecomp, "BG - White");
+        }
+      }
+
+      break;
+    case "3D":
+      break;
+    case "Ribbon":
+      break;
   }
+
   // Estende a duração da composição duplicada e suas camadas para o tempo personalizado
   extendCompAndLayersToCustomTime(duplicatedPrecomp, customDuration);
 
@@ -131,7 +215,7 @@ function duplicatePrecompToOutput(values) {
 
   ScaleCompositionByWidth(duplicatedPrecomp, resolution);
 
-  alert("Pré-composição '" + precompName + "' foi duplicada, estendida para " + customDuration + " segundos e movida para a pasta 'Output'!");
+  alert("Composição " + sufix + " (" + customDuration + "s) criada com sucesso e adicionada na pasta Output");
 
   openComposition(duplicatedPrecomp);
 
@@ -144,7 +228,7 @@ function duplicatePrecompToOutput(values) {
   };
 
   var outputSettings = {
-    format: values.fileType === "mov" ? "Lossless" : "H.264",
+    format: values.fileType === "mov" ? "MOV" : "H.264",
     channel: "RGB+Alpha",
     destination: values.outputPath,
     colorDepth: "Millions of Colors+", // 8-bits = "Millions of Colors", 16-bits = "Trillions of Colors", 32-bits = "Floating Point"
@@ -245,7 +329,7 @@ function renderComposition(comp, renderSettings, outputSettings) {
 
   // Adiciona a composição à fila de renderização
   var renderQueueItem = app.project.renderQueue.items.add(comp);
-  alert("foi pra fila");
+  alert("Iniciando Renderização, aguarde......");
 
   // Configura as Configurações de Renderização
   if (renderSettings) {
@@ -277,7 +361,7 @@ function renderComposition(comp, renderSettings, outputSettings) {
   // Inicia a renderização
 
   app.project.renderQueue.render();
-  alert("Render Concluido");
+  alert("Render Concluído");
 }
 
 //var desiredDuration = 60; // Defina a duração desejada aqui

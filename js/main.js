@@ -444,7 +444,7 @@
   // Event listeners
   window.onload = function () {
     populateDropdown(style, Object.keys(imagesData));
-    checkInputs;
+    // checkInputs;
 
     style.onchange = function () {
       populateDropdown(version, Object.keys(imagesData[this.value]));
@@ -549,7 +549,7 @@
     // testCommunication();
 
     function sendValuesToJSX(render, outputPath) {
-      alert("Coletando valores dos elementos DOM...");
+      //alert("Coletando valores dos elementos DOM...");
 
       // Transforma o objeto cropData no formato desejado
       const cropData = JSON.parse(data.textContent);
@@ -567,7 +567,7 @@
         colorScheme: color_scheme.value,
         cropSelect: crop_select.value,
         resolution: resolution.value,
-        ar: document.getElementById("aspect_ratio_select").value,
+        aspectRatio: document.getElementById("aspect_ratio_select").value,
         alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
@@ -577,9 +577,9 @@
         fileType: movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null,
       };
 
-      alert("Valores coletados. Enviando para o script JSX...");
+      // alert("Valores coletados. Enviando para o script JSX...");
 
-      alert(document.getElementById("aspect_ratio_select").value);
+      // alert(document.getElementById("customRange1").value);
       // Envia o objeto para o script JSX
       csInterface.evalScript(`duplicatePrecompToOutput(${JSON.stringify(values)})`);
     }

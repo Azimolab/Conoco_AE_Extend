@@ -115,10 +115,10 @@
 
 
               <div class="col-md-4">
-                <label for="resolution_select">Resolution:</label>
+                <label for="resolution_select" class="form-label">Resolution (width)</label>
                 <select class="form-select" id="resolution_select">
                   <option value="2560">2560p</option>
-                  <option value="1920">1920p</option>
+                  <option value="1920" selected>1920p</option>
                   <option value="1080">1080p</option>
                   <option value="720">720p</option>
                 </select>
@@ -271,10 +271,10 @@
 
               <div class="d-flex justify-content-end gap-2">
 
-                <button class="btn btn-primary custom-btn" type="button" id="create-composition" disabled>
+                <button class="btn btn-primary custom-btn" type="button" id="create-composition">
                   <i class="bi bi-download"></i> Create Composition
                 </button>
-                <button class="btn btn-primary custom-btn" type="button" id="export" disabled>
+                <button class="btn btn-primary custom-btn" type="button" id="export">
                   <i class="bi bi-upload"></i> Export
                 </button>
               </div>
