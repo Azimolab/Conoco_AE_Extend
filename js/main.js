@@ -1,6 +1,21 @@
 (function () {
-  ("use strict");
+  "use strict";
+  var path, slash;
+  path = location.href;
+  if (getOS() == "MAC") {
+    slash = "/";
+    path = path.substring(0, path.length - 11);
+  }
+  if (getOS() == "WIN") {
+    slash = "/";
+    path = path.substring(7, path.length - 11);
+    path = path.replace(":", "");
+    path = path.replace("C", "c");
+    // alert(path);
+  }
 
+  // document.getElementById("previewSection").innerHTML = path.replace(/%20/g, " ") + "/js";
+  document.getElementById("previewSection").innerHTML = path;
   // DOM elements
   const forms = document.querySelectorAll(".needs-validation");
   const style = document.getElementById("style");
@@ -68,13 +83,13 @@
     return arr.reduce((prev, curr) => (Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev));
   }
   const AR = {
-    "16:9": { x: 0, y: 0, width: 1920, aspectRatio: 16 / 9 },
-    "9:16": { x: 0, y: 0, width: 607, aspectRatio: 9 / 16 },
-    "2:3": { x: 0, y: 0, width: 720, aspectRatio: 2 / 3 },
-    "4:3": { x: 0, y: 0, width: 1440, aspectRatio: 4 / 3 },
-    "21:9": { x: 0, y: 0, width: 1920, aspectRatio: 21 / 9 },
-    "9:21": { x: 0, y: 0, width: 463, aspectRatio: 9 / 21 },
-    "1:1": { x: 0, y: 0, width: 1080, aspectRatio: 1 },
+    "16:9": { x: 0, y: 0, width: 998, aspectRatio: 16 / 9 },
+    "9:16": { x: 0, y: 0, width: 316, aspectRatio: 9 / 16 },
+    "2:3": { x: 0, y: 0, width: 374, aspectRatio: 2 / 3 },
+    "4:3": { x: 0, y: 0, width: 750, aspectRatio: 4 / 3 },
+    "21:9": { x: 0, y: 0, width: 998, aspectRatio: 21 / 9 },
+    "9:21": { x: 0, y: 0, width: 241, aspectRatio: 9 / 21 },
+    "1:1": { x: 0, y: 0, width: 563, aspectRatio: 1 },
   };
 
   const AR4 = {
@@ -113,38 +128,38 @@
   var imagesData = {
     "Solid Mark Motif": {
       "Without Lines": {
-        "Red only": { img: "./assets/smm/smm_red_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue only": { img: "./assets/smm/smm_blue_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal only": { img: "./assets/smm/smm_teal_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Salmon only": { img: "./assets/smm/smm_salmon_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Orange only": { img: "./assets/smm/smm_orange_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Purple only": { img: "./assets/smm/smm_purple_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Fuchsia only": { img: "./assets/smm/smm_fuchsia_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Green only": { img: "./assets/smm/smm_green_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Aqua only": { img: "./assets/smm/smm_aqua_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Red + Salmon": { img: "./assets/smm/smm_red_salmon.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Red + Orange": { img: "./assets/smm/smm_red_orange.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue + Purple": { img: "./assets/smm/smm_blue_purple.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue + Fuchsia": { img: "./assets/smm/smm_blue_fuchsia.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal + Green": { img: "./assets/smm/smm_teal_green.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal + Aqua": { img: "./assets/smm/smm_teal_aqua.png", rduration: false, lock: false, alpha: false, data: AR },
+        "Red only": { img: "./assets/smm/smm_red_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue only": { img: "./assets/smm/smm_blue_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal only": { img: "./assets/smm/smm_teal_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Salmon only": { img: "./assets/smm/smm_salmon_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Orange only": { img: "./assets/smm/smm_orange_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Purple only": { img: "./assets/smm/smm_purple_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Fuchsia only": { img: "./assets/smm/smm_fuchsia_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Green only": { img: "./assets/smm/smm_green_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Aqua only": { img: "./assets/smm/smm_aqua_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Red + Salmon": { img: "./assets/smm/smm_red_salmon.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Red + Orange": { img: "./assets/smm/smm_red_orange.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue + Purple": { img: "./assets/smm/smm_blue_purple.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue + Fuchsia": { img: "./assets/smm/smm_blue_fuchsia.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal + Green": { img: "./assets/smm/smm_teal_green.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal + Aqua": { img: "./assets/smm/smm_teal_aqua.png", rduration: false, lock: false, alpha: true, data: AR },
       },
       "With Lines": {
-        "Red only": { img: "./assets/smml/smml_red_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue only": { img: "./assets/smml/smml_blue_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal only": { img: "./assets/smml/smml_teal_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Salmon only": { img: "./assets/smml/smml_salmon_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Orange only": { img: "./assets/smml/smml_orange_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Purple only": { img: "./assets/smml/smml_purple_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Fuchsia only": { img: "./assets/smml/smml_fuchsia_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Green only": { img: "./assets/smml/smml_green_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Aqua only": { img: "./assets/smml/smml_aqua_only.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Red + Salmon": { img: "./assets/smml/smml_red_salmon.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Red + Orange": { img: "./assets/smml/smml_red_orange.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue + Purple": { img: "./assets/smml/smml_blue_purple.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Blue + Fuchsia": { img: "./assets/smml/smml_blue_fuchsia.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal + Green": { img: "./assets/smml/smml_teal_green.png", rduration: false, lock: false, alpha: false, data: AR },
-        "Teal + Aqua": { img: "./assets/smml/smml_teal_aqua.png", rduration: false, lock: false, alpha: false, data: AR },
+        "Red only": { img: "./assets/smml/smml_red_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue only": { img: "./assets/smml/smml_blue_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal only": { img: "./assets/smml/smml_teal_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Salmon only": { img: "./assets/smml/smml_salmon_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Orange only": { img: "./assets/smml/smml_orange_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Purple only": { img: "./assets/smml/smml_purple_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Fuchsia only": { img: "./assets/smml/smml_fuchsia_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Green only": { img: "./assets/smml/smml_green_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Aqua only": { img: "./assets/smml/smml_aqua_only.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Red + Salmon": { img: "./assets/smml/smml_red_salmon.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Red + Orange": { img: "./assets/smml/smml_red_orange.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue + Purple": { img: "./assets/smml/smml_blue_purple.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Blue + Fuchsia": { img: "./assets/smml/smml_blue_fuchsia.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal + Green": { img: "./assets/smml/smml_teal_green.png", rduration: false, lock: false, alpha: true, data: AR },
+        "Teal + Aqua": { img: "./assets/smml/smml_teal_aqua.png", rduration: false, lock: false, alpha: true, data: AR },
       },
       "Text Frame": {
         "Red only": { img: "./assets/smm_text_frame/smm_text_frame_red_only_16_9.png", rduration: false, lock: true, alpha: true, data: AR2 },
@@ -314,7 +329,7 @@
     image.onload = function () {
       image.classList.add("fade");
       const cropData = imageData.data[aspectRatio];
-      const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 1;
+      const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.5;
       console.log(cropScale);
       console.log(cropData);
       cropper = new Cropper(image, {
@@ -330,16 +345,16 @@
         },
         ready: function () {
           let cropData = imageData.data[aspectRatio];
-          const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 1;
+          const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.5;
 
           let newWidth = cropData.width * cropScale;
           let newHeight = (cropData.width * cropScale) / cropData.aspectRatio;
 
-          // // If lock is false and cropOption is "100%" or "200%", center the crop area
-          // if (!lock && (cropOption === "100%" || cropOption === "200%")) {
-          //   cropData.x = (image.naturalWidth - newWidth) / 2;
-          //   cropData.y = (image.naturalHeight - newHeight) / 2;
-          // }
+          // If lock is false and cropOption is "100%" or "200%", center the crop area
+          if (!lock && (cropOption === "100%" || cropOption === "200%" || cropOption === "free")) {
+            cropData.x = (image.naturalWidth - newWidth) / 2;
+            cropData.y = (image.naturalHeight - newHeight) / 2;
+          }
 
           cropper.setData({
             x: cropData.x,
@@ -571,6 +586,7 @@
         alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
+        path: path,
         outputPath: outputPath,
         render: render,
         switchAlpha: switch_alpha.checked,
@@ -612,3 +628,20 @@
     // Adiciona um evento de clique ao botão "Create Composition"
   };
 })();
+
+function goIntoJSX() {}
+
+function getOS() {
+  var userAgent = window.navigator.userAgent,
+    platform = window.navigator.platform,
+    macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
+    windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
+    os = null;
+
+  if (macosPlatforms.indexOf(platform) != -1) {
+    os = "MAC";
+  } else if (windowsPlatforms.indexOf(platform) != -1) {
+    os = "WIN";
+  }
+  return os;
+}
