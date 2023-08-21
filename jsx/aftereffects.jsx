@@ -1,4 +1,7 @@
-﻿function itemExistsInProject(itemName) {
+﻿alert("JSX: ExtendScript loaded and running.");
+
+// Adicionar um listener para o evento de teste
+function itemExistsInProject(itemName) {
   for (var i = 1; i <= app.project.numItems; i++) {
     if (app.project.item(i).name === itemName) {
       return true;
@@ -361,6 +364,8 @@ function ScaleCompositionByWidth(compToScale, newWidth) {
 
   var scale_factor = newWidth / compToScale.width;
 
+  alert("CSInterface: " + typeof CSInterface);
+
   app.beginUndoGroup("Scale Composition By Width");
 
   // Create a null 3D layer.
@@ -427,7 +432,6 @@ function chooseOutputPath(fileType) {
     return null; // Usuário cancelou o diálogo
   }
 }
-
 function renderComposition(comp, renderSettings, outputSettings) {
   while (app.project.renderQueue.numItems > 0) {
     app.project.renderQueue.item(1).remove();
@@ -439,20 +443,23 @@ function renderComposition(comp, renderSettings, outputSettings) {
     return;
   }
 
+  // var csInterface = new CSInterface();
+
   // Adiciona a composição à fila de renderização
   var renderQueueItem = app.project.renderQueue.items.add(comp);
+
+  // // Envie um evento para o painel HTML indicando que a renderização começou
+  // var startEvent = new CSEvent("renderProgress", "APPLICATION");
+  // startEvent.data = "start";
+  // csInterface.dispatchEvent(startEvent);
   alert("Iniciando Renderização, aguarde......");
 
   // Configura as Configurações de Renderização
   if (renderSettings) {
     if (renderSettings.timeSpan) renderQueueItem.timeSpan = renderSettings.timeSpan;
-
     if (renderSettings.quality) renderQueueItem.quality = renderSettings.quality;
-
     if (renderSettings.resolution) renderQueueItem.resolution = renderSettings.resolution;
-
     if (renderSettings.effects) renderQueueItem.effects = renderSettings.effects;
-
     if (renderSettings.diskCache) renderQueueItem.diskCache = renderSettings.diskCache;
   }
 
@@ -462,16 +469,18 @@ function renderComposition(comp, renderSettings, outputSettings) {
     if (outputSettings.format) outputModule.applyTemplate(outputSettings.format);
     if (outputSettings.destination) outputModule.file = new File(outputSettings.destination);
     if (outputSettings.channel) outputModule.channels = outputSettings.channel;
-
     if (outputSettings.colorDepth) outputModule.depth = outputSettings.colorDepth;
-
     if (outputSettings.resize) outputModule.resize = outputSettings.resize;
-
     if (outputSettings.frameRate) outputModule.frameRate = outputSettings.frameRate;
   }
 
   // Inicia a renderização
-
   app.project.renderQueue.render();
   alert("Render Concluído");
+
+  // Envie um evento para o painel HTML indicando que a renderização foi concluída
+  // var completeEvent = new CSEvent("renderProgress", "APPLICATION");
+  // completeEvent.data = "complete";
+  // csInterface.dispatchEvent(completeEvent);
 }
+alert("Fim");

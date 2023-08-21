@@ -86,7 +86,7 @@ p {
 }
 
 .fade {
-  transition: opacity 4.5s;
+  transition: opacity 0.5s;
   opacity: 1;
 }
 .fade:not(.fade) {

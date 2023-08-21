@@ -11,12 +11,9 @@
     path = path.substring(7, path.length - 11);
     path = path.replace(":", "");
     path = path.replace("C", "c");
-    // alert(path);
   }
 
-  // document.getElementById("previewSection").innerHTML = path.replace(/%20/g, " ") + "/js";
   document.getElementById("previewSection").innerHTML = path;
-  // DOM elements
   const forms = document.querySelectorAll(".needs-validation");
   const style = document.getElementById("style");
   const version = document.getElementById("version");
@@ -395,6 +392,16 @@
     }
   }
 
+  // function showModal() {
+  //   var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
+  //   myModal.show();
+  // }
+
+  // function hideModal() {
+  //   var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
+  //   myModal.hide();
+  // }
+
   function checkAlpha() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
 
@@ -605,21 +612,14 @@
     });
     // Adiciona um evento de clique ao botão "Create Composition"
   };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var testModalButton = document.getElementById("testModalButton");
+    if (testModalButton) {
+      testModalButton.addEventListener("click", function () {
+        showModal();
+        // onLoaded();
+      });
+    }
+  });
 })();
-
-function goIntoJSX() {}
-
-function getOS() {
-  var userAgent = window.navigator.userAgent,
-    platform = window.navigator.platform,
-    macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
-    windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
-    os = null;
-
-  if (macosPlatforms.indexOf(platform) != -1) {
-    os = "MAC";
-  } else if (windowsPlatforms.indexOf(platform) != -1) {
-    os = "WIN";
-  }
-  return os;
-}
