@@ -178,6 +178,8 @@ function duplicatePrecompToOutput(values) {
 
   importAEPFile(path, Name);
 
+  alert(values.resolution);
+
   var ConocoFolder = findItemByName("Conoco");
   if (!ConocoFolder || !(ConocoFolder instanceof FolderItem)) {
     alert("Pasta 'ASD' não encontrada! Criando uma nova...");
