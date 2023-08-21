@@ -1,4 +1,0 @@
-C:\Program Files (x86)\Common Files\Adobe\CEP\extensions
-
-
-HKEY_CURRENT_USER\Software\Adobe\CSXS.11
