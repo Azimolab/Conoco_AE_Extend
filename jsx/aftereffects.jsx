@@ -1,7 +1,4 @@
-﻿alert("JSX: ExtendScript loaded and running.");
-
-// Adicionar um listener para o evento de teste
-function itemExistsInProject(itemName) {
+﻿function itemExistsInProject(itemName) {
   for (var i = 1; i <= app.project.numItems; i++) {
     if (app.project.item(i).name === itemName) {
       return true;
@@ -9,6 +6,8 @@ function itemExistsInProject(itemName) {
   }
   return false;
 }
+
+// Adicionar um listener para o evento de teste
 
 function importAEPFile(Path, name) {
   var extensionPath = Path;
@@ -181,7 +180,7 @@ function duplicatePrecompToOutput(values) {
 
   importAEPFile(path, Name);
 
-  alert(values.resolution);
+  //alert(values.resolution);
 
   var ConocoFolder = findItemByName("Conoco");
   if (!ConocoFolder || !(ConocoFolder instanceof FolderItem)) {
@@ -330,7 +329,10 @@ function duplicatePrecompToOutput(values) {
 
   ScaleCompositionByWidth(duplicatedPrecomp, resolution);
 
-  alert("Composição " + sufix + " (" + customDuration + "s) criada com sucesso e adicionada na pasta Output");
+  if (!values.render) {
+    // alert("0");
+    return "0";
+  }
 
   openComposition(duplicatedPrecomp);
 
@@ -352,7 +354,12 @@ function duplicatePrecompToOutput(values) {
   };
 
   if (values.render) {
-    renderComposition(duplicatedPrecomp, renderSettings, outputSettings);
+    var progress = renderComposition(duplicatedPrecomp, renderSettings, outputSettings);
+
+    if (progress === 100) {
+      // alert("1");
+      return "1";
+    }
   }
 }
 
@@ -364,7 +371,7 @@ function ScaleCompositionByWidth(compToScale, newWidth) {
 
   var scale_factor = newWidth / compToScale.width;
 
-  alert("CSInterface: " + typeof CSInterface);
+  //alert("CSInterface: " + typeof CSInterface);
 
   app.beginUndoGroup("Scale Composition By Width");
 
@@ -452,7 +459,7 @@ function renderComposition(comp, renderSettings, outputSettings) {
   // var startEvent = new CSEvent("renderProgress", "APPLICATION");
   // startEvent.data = "start";
   // csInterface.dispatchEvent(startEvent);
-  alert("Iniciando Renderização, aguarde......");
+  //alert("Iniciando Renderização, aguarde......");
 
   // Configura as Configurações de Renderização
   if (renderSettings) {
@@ -476,11 +483,12 @@ function renderComposition(comp, renderSettings, outputSettings) {
 
   // Inicia a renderização
   app.project.renderQueue.render();
-  alert("Render Concluído");
+  // alert("Render Concluído");
 
   // Envie um evento para o painel HTML indicando que a renderização foi concluída
   // var completeEvent = new CSEvent("renderProgress", "APPLICATION");
   // completeEvent.data = "complete";
   // csInterface.dispatchEvent(completeEvent);
+
+  return 100;
 }
-alert("Fim");

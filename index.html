@@ -18,6 +18,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
 
 
   <script src="./js/libs/CSInterface.js"></script>
@@ -27,16 +29,13 @@
 
   <script>
 
-    var csInterface = new CSInterface();
-    var extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION) + "/jsx/";
-    csInterface.evalScript('$._ext.evalFiles("' + extensionRoot + '")');
-    alert(extensionRoot);
+
 
     function loadJSX() {
       var csInterface = new CSInterface();
       var extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION) + "/jsx/";
       csInterface.evalScript('$._ext.evalFiles("' + extensionRoot + '")');
-      alert(extensionRoot);
+      //alert(extensionRoot);
     }
 
     function evalScript(script, callback) {
@@ -64,6 +63,20 @@
     }
 
     loadJSX()
+
+    // var csInterface = new CSInterface();
+
+    // // Adicione um ouvinte de evento para "renderComplete"
+    // csInterface.addEventListener("renderComplete", function (evt) {
+    //   if (evt.data === "success") {
+    //     alert("11111");
+    //     showRenderModal("Renderização concluída");
+    //   } else {
+    //     alert("22222");
+    //     showRenderModal("Erro na renderização: " + evt.data);
+    //   }
+    // });
+
 
   </script>
   <!-- <script type="text/javascript">
@@ -93,18 +106,19 @@
 </head>
 
 <!-- Modal -->
-<div class="modal fade" id="renderModal" tabindex="-1" aria-labelledby="renderModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="renderModal" tabindex="-1" aria-labelledby="renderModalLabel" aria-hidden="true"
+  data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="renderModalLabel">Renderização</h5>
+        <h5 class="modal-title" id="renderModalLabel">Rendering....</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        Aguarde o fim da renderização...
+        Body
         <div class="progress mt-3">
-          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75"
-            aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
+            aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
         </div>
       </div>
     </div>
@@ -114,209 +128,213 @@
 <body class="bg-dark">
   <div class="container">
     <main>
-      <div class="py-5 text-center">
+      <div class="py-4 text-center">
         <!-- <h2>Checkout form</h2> -->
         <!-- <p class="lead">Below is an example form</p> -->
+        <div class="logo-container d-inline-block">
+          <img src="./assets/logo.png" class="img-fluid" alt="...">
+        </div>
+        <!-- Adicione outros elementos de design do modal conforme necessário -->
+      </div>
+  </div>
+
+  <div class="row g-5">
+    <div class="col-md-auto col-lg-12 w-100">
+      <div class="row g-3">
+        <div class="col-md-1">
+          <hr class="my-2" />
+        </div>
+        <div class="col-md-auto">
+          <h6 class="mb-3">Design</h6>
+        </div>
+        <div class="col-md">
+          <hr class="my-2" />
+        </div>
       </div>
 
-      <div class="row g-5">
-        <div class="col-md-auto col-lg-12 w-100">
-          <div class="row g-3">
+      <form class="needs-validation" novalidate>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="country" class="form-label">Style</label>
+            <select class="form-select" id="style" required>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+            <label for="state" class="form-label">Version</label>
+            <select class="form-select" id="version" required>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+            <label for="state" class="form-label">Color Scheme</label>
+            <select class="form-select" id="color_scheme" required>
+
+            </select>
+
+
+          </div>
+        </div>
+
+        <div class="my-2 row g-3">
+          <div class="col-md-1">
+            <hr class="my-2" />
+          </div>
+          <div class="col-md-auto">
+            <h6 class="mb-3">Size/Format</h6>
+          </div>
+          <div class="col-md">
+            <hr class="my-2" />
+          </div>
+        </div>
+
+        <div class="row g-3">
+
+
+
+          <div class="col-md-4">
+            <label for="state" class="form-label">Aspect Ratio:</label>
+            <select class="form-select" id="aspect_ratio_select" disabled>
+              <option value="16:9">16 : 9</option>
+              <option value="9:16">9 : 16</option>
+              <option value="2:3">2 : 3</option>
+              <option value="4:3">4 : 3</option>
+              <option value="21:9">21 : 9</option>
+              <option value="9:21">9 : 21</option>
+              <option value="1:1">1 : 1</option>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+            <label for="country" class="form-label">Crop</label>
+            <select class="form-select" id="crop_select" required>
+              <option value="100%">100%</option>
+              <option value="200%">200%</option>
+              <option value="free">free</option>
+            </select>
+          </div>
+
+
+          <div class="col-md-4">
+            <label for="resolution_select" class="form-label">Resolution (width)</label>
+            <select class="form-select" id="resolution_select">
+              <option value="2560">2560p</option>
+              <option value="1920" selected>1920p</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div class="row g-3 my-2">
+          <div class="col-md-1">
+            <hr class="my-2" />
+          </div>
+          <div class="col-md-auto">
+            <h6 class="mb-3">Duration</h6>
+          </div>
+          <div class="col-md">
+            <hr class="my-2" />
+          </div>
+        </div>
+
+
+        <div class="row g-2 my-2">
+
+          <div class="col-md-4">
+
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="cc-name" placeholder="15" required />
+              <span class="input-group-text" id="basic-addon2">seconds</span>
+            </div>
+
+            <!-- <small class="text-muted">set manual duration</small> -->
+          </div>
+          <div class="col-md px-3">
+            <input type="range" class="form-range" id="customRange1" min="5.0" max="60.0" step="0.1" value="15.0" />
+            <!-- oninput removido daqui -->
+
+            <div id="sliderTicks">
+              <span>5</span>
+              <span>10</span>
+              <span>15</span>
+              <span>20</span>
+              <span>25</span>
+              <span>30</span>
+              <span>35</span>
+              <span>40</span>
+              <span>45</span>
+              <span>50</span>
+              <span>55</span>
+              <span>60</span>
+            </div>
+          </div>
+
+          <script>
+
+          </script>
+
+
+
+          <div class="my-2 row g-3">
             <div class="col-md-1">
               <hr class="my-2" />
             </div>
             <div class="col-md-auto">
-              <h6 class="mb-3">Design</h6>
+              <h6 class="mb-3">Export settings</h6>
             </div>
             <div class="col-md">
               <hr class="my-2" />
             </div>
           </div>
 
-          <form class="needs-validation" novalidate>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label for="country" class="form-label">Style</label>
-                <select class="form-select" id="style" required>
 
-                </select>
+          <div class="row">
 
+            <div class="row">
+
+              <div class="col-md-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="gridRadios" id="MOV_file" value="option1" checked>
+                  <label class="form-check-label" for="gridRadios1">
+                    MOV
+                  </label>
+                </div>
               </div>
 
-              <div class="col-md-4">
-                <label for="state" class="form-label">Version</label>
-                <select class="form-select" id="version" required>
-
-                </select>
-
-              </div>
-
-              <div class="col-md-4">
-                <label for="state" class="form-label">Color Scheme</label>
-                <select class="form-select" id="color_scheme" required>
-
-                </select>
-
-
-              </div>
-            </div>
-
-            <div class="my-2 row g-3">
-              <div class="col-md-1">
-                <hr class="my-2" />
-              </div>
-              <div class="col-md-auto">
-                <h6 class="mb-3">Size/Format</h6>
-              </div>
-              <div class="col-md">
-                <hr class="my-2" />
-              </div>
-            </div>
-
-            <div class="row g-3">
-
-
-
-              <div class="col-md-4">
-                <label for="state" class="form-label">Aspect Ratio:</label>
-                <select class="form-select" id="aspect_ratio_select" disabled>
-                  <option value="16:9">16 : 9</option>
-                  <option value="9:16">9 : 16</option>
-                  <option value="2:3">2 : 3</option>
-                  <option value="4:3">4 : 3</option>
-                  <option value="21:9">21 : 9</option>
-                  <option value="9:21">9 : 21</option>
-                  <option value="1:1">1 : 1</option>
-
-                </select>
-
-              </div>
-
-              <div class="col-md-4">
-                <label for="country" class="form-label">Crop</label>
-                <select class="form-select" id="crop_select" required>
-                  <option value="100%">100%</option>
-                  <option value="200%">200%</option>
-                  <option value="free">free</option>
-                </select>
-              </div>
-
-
-              <div class="col-md-4">
-                <label for="resolution_select" class="form-label">Resolution (width)</label>
-                <select class="form-select" id="resolution_select">
-                  <option value="2560">2560p</option>
-                  <option value="1920" selected>1920p</option>
-                  <option value="1080">1080p</option>
-                  <option value="720">720p</option>
-                </select>
+              <div class="col-md-10">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="switch_alpha">
+                  <label class="form-check-label" for="flexSwitchCheckDefault">ALPHA</label>
+                </div>
 
               </div>
 
             </div>
 
 
-            <div class="row g-3 my-2">
-              <div class="col-md-1">
-                <hr class="my-2" />
-              </div>
-              <div class="col-md-auto">
-                <h6 class="mb-3">Duration</h6>
-              </div>
-              <div class="col-md">
-                <hr class="my-2" />
+            <div class="col-md-12">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="gridRadios" id="MP4_file" value="option2">
+                <label class="form-check-label" for="gridRadios2">
+                  MP4
+                </label>
               </div>
             </div>
 
 
-            <div class="row g-2 my-2">
+          </div>
 
-              <div class="col-md-4">
-
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" id="cc-name" placeholder="15" required />
-                  <span class="input-group-text" id="basic-addon2">seconds</span>
-                </div>
-
-                <!-- <small class="text-muted">set manual duration</small> -->
-              </div>
-              <div class="col-md px-3">
-                <input type="range" class="form-range" id="customRange1" min="5.0" max="60.0" step="0.1" value="15.0" />
-                <!-- oninput removido daqui -->
-
-                <div id="sliderTicks">
-                  <span>5</span>
-                  <span>10</span>
-                  <span>15</span>
-                  <span>20</span>
-                  <span>25</span>
-                  <span>30</span>
-                  <span>35</span>
-                  <span>40</span>
-                  <span>45</span>
-                  <span>50</span>
-                  <span>55</span>
-                  <span>60</span>
-                </div>
-              </div>
-
-              <script>
-
-              </script>
-
-
-
-              <div class="my-2 row g-3">
-                <div class="col-md-1">
-                  <hr class="my-2" />
-                </div>
-                <div class="col-md-auto">
-                  <h6 class="mb-3">Export settings</h6>
-                </div>
-                <div class="col-md">
-                  <hr class="my-2" />
-                </div>
-              </div>
-
-
-              <div class="row">
-
-                <div class="row">
-
-                  <div class="col-md-2">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="gridRadios" id="MOV_file" value="option1"
-                        checked>
-                      <label class="form-check-label" for="gridRadios1">
-                        MOV
-                      </label>
-                    </div>
-                  </div>
-
-                  <div class="col-md-10">
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="switch_alpha">
-                      <label class="form-check-label" for="flexSwitchCheckDefault">ALPHA</label>
-                    </div>
-
-                  </div>
-
-                </div>
-
-
-                <div class="col-md-12">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gridRadios" id="MP4_file" value="option2">
-                    <label class="form-check-label" for="gridRadios2">
-                      MP4
-                    </label>
-                  </div>
-                </div>
-
-
-              </div>
-
-              <script>
+          <script>
               // document.addEventListener('DOMContentLoaded', (event) => {
               //   // Get references to the elements
               //   const movRadio = document.getElementById('MOV_file');
@@ -335,53 +353,46 @@
               //     alphaSwitch.disabled = !movRadio.checked;
               //   }
               // });
-              </script>
+          </script>
 
-              <div class="my-2 row g-3">
-                <div class="col-md-1">
-                  <hr class="my-2" />
-                </div>
-                <div class="col-md-auto">
-                  <h6 class="mb-3">Preview</h6>
-                </div>
-                <div class="col-md">
-                  <hr class="my-2" />
-                </div>
-              </div>
-
-
-              <div class="image-container" style="height: auto;">
-                <div>
-                  <img id="image" src="./assets/smm/smm_aqua_only.png" style="max-width: 100%; height: auto;" />
-                </div>
-              </div>
-              <p><span id="data"></span></p>
-
-              <div class="d-flex justify-content-end gap-2">
-
-                <button class="btn btn-primary custom-btn" type="button" id="create-composition">
-                  <i class="bi bi-download"></i> Create Composition
-                </button>
-                <button class="btn btn-primary custom-btn" type="button" id="export">
-                  <i class="bi bi-upload"></i> Export
-                </button>
-              </div>
-
+          <div class="my-2 row g-3">
+            <div class="col-md-1">
+              <hr class="my-2" />
             </div>
+            <div class="col-md-auto">
+              <h6 class="mb-3">Preview</h6>
+            </div>
+            <div class="col-md">
+              <hr class="my-2" />
+            </div>
+          </div>
 
-            <button id="" onclick=""></button>
 
-            <div id="previewSection">
+          <div class="image-container" style="height: auto;">
+            <div>
+              <img id="image" src="./assets/smm/smm_aqua_only.png" style="max-width: 100%; height: auto;" />
+            </div>
+          </div>
+          <p><span id="data"></span></p>
 
-              <progress id="progressBar" value="0" max="100"></progress>
-              <span id="progressText">0%</span>
+          <div class="d-flex justify-content-end gap-2">
 
+            <button class="btn btn-primary custom-btn" type="button" id="create-composition">
+              <i class="bi bi-download"></i> Create Composition
+            </button>
+            <button class="btn btn-primary custom-btn" type="button" id="export">
+              <i class="bi bi-upload"></i> Export
+            </button>
+          </div>
 
-          </form>
         </div>
-        <div class="mt-3">
-          <button type="button" class="btn btn-primary" id="testModalButton">Testar Modal</button>
-        </div>
+
+
+        <div id="previewSection">
+
+      </form>
+    </div>
+    <!-- <button type="button" class="btn btn-primary" id="testModalBtn">Testar Modal</button> -->
 
 
     </main>

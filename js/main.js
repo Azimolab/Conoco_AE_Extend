@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  ("use strict");
   var path, slash;
   path = location.href;
   if (getOS() == "MAC") {
@@ -13,7 +13,7 @@
     path = path.replace("C", "c");
   }
 
-  document.getElementById("previewSection").innerHTML = path;
+  //document.getElementById("previewSection").innerHTML = path;
   const forms = document.querySelectorAll(".needs-validation");
   const style = document.getElementById("style");
   const version = document.getElementById("version");
@@ -33,6 +33,11 @@
   var rduration = true;
   var intervaloPermitido = [10, 15, 20, 30];
   var valoresDesabilitados = [5, 25, 35, 40, 45, 50, 55, 60];
+
+  var modal = new bootstrap.Modal(document.getElementById("renderModal"), {
+    backdrop: "static",
+    keyboard: false,
+  });
 
   document.getElementById("customRange1").addEventListener("input", function () {
     updateValue(this.value);
@@ -392,16 +397,6 @@
     }
   }
 
-  function showModal() {
-    var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
-    myModal.show();
-  }
-
-  function hideModal() {
-    var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
-    myModal.hide();
-  }
-
   function checkAlpha() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
 
@@ -565,7 +560,8 @@
 
     function sendValuesToJSX(render, outputPath) {
       //alert("Coletando valores dos elementos DOM...");
-
+      let croppedCanvas = cropper.getCroppedCanvas();
+      let croppedImageSrc = croppedCanvas.toDataURL("image/png");
       // Transforma o objeto cropData no formato desejado
       const cropData = JSON.parse(data.textContent);
 
@@ -583,7 +579,6 @@
         cropSelect: crop_select.value,
         resolution: resolution.value,
         aspectRatio: document.getElementById("aspect_ratio_select").value,
-        alphaSwitch: switch_alpha.checked,
         duration: document.getElementById("customRange1").value,
         roi: roi,
         path: path,
@@ -593,18 +588,159 @@
         fileType: movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null,
       };
 
+      //       let listContent = `
+      // <div class="container mt-5">
+      //   <div class="row justify-content-center">
+      //     <div class="col-md-8">
+      //       <div class="cropped-image-container mb-4 text-center shadow">
+      //         <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" style="max-width: 80%;" />
+      //       </div>
+      //       <div class="bg-white p-4 rounded shadow">
+      //         <h5 class="mb-3 text-muted text-center">Settings</h5>
+      //         <ul class="list-group list-group-flush mb-3">
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-aspect-ratio"></i> Style</span>
+      //             <span>${values.style}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-version"></i> Version</span>
+      //             <span>${values.version}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-palette"></i> Color Scheme</span>
+      //             <span>${values.colorScheme}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-tv"></i> Resolution</span>
+      //             <span>${values.resolution}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-aspect-ratio-fill"></i> Aspect Ratio</span>
+      //             <span>${values.aspectRatio}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-clock"></i> Duration</span>
+      //             <span>${values.duration + " seconds"}</span>
+      //           </li>
+      //           <li class="list-group-item d-flex justify-content-between align-items-center">
+      //             <span><i class="bi bi-eye${values.switchAlpha ? "-slash" : ""}"></i> Alpha</span>
+      //             <span>${values.switchAlpha ? "Yes" : "No"}</span>
+      //           </li>
+      //         </ul>
+      //         <p class="text-center text-muted">Check the composition in the 'Output' folder.</p>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
+      // `;
+
+      let listContent = `
+<div class="container mt-3 text-white">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Div da Imagem -->
+            <div class="cropped-image-container mb-3 text-center">
+                <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" />
+            </div>
+            
+            <!-- Div da Tabela -->
+            <div class="table-responsive mb-3">
+                <table class="table table-dark table-sm">
+                    <tbody>
+                        <tr>
+                            <td><i class="bi bi-aspect-ratio"></i> Style</td>
+                            <td>${values.style}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-version"></i> Version</td>
+                            <td>${values.version}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-palette"></i> Color Scheme</td>
+                            <td>${values.colorScheme}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-tv"></i> Resolution</td>
+                            <td>${values.resolution}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-aspect-ratio-fill"></i> Aspect Ratio</td>
+                            <td>${values.aspectRatio}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-clock"></i> Duration</td>
+                            <td>${values.duration + " seconds"}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-eye"></i> Alpha</td>
+                            <td>${values.switchAlpha ? "Yes" : "No"}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <p class="text-center fs-5">Check the composition in the 'Output' folder.</p>
+        </div>
+    </div>
+</div>
+`;
+
+      let listContent2 = `
+<div class="container mt-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="cropped-image-container mb-3 text-center">
+        <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" />
+      </div>
+      <ul class="list-group mb-3">
+        <li class="list-group-item">Style: ${values.style}</li>
+        <li class="list-group-item">Version: ${values.version}</li>
+        <li class="list-group-item">Color Scheme: ${values.colorScheme}</li>
+        <li class="list-group-item">Resolution: ${values.resolution}</li>
+        <li class="list-group-item">Aspect Ratio: ${values.aspectRatio}</li>
+        <li class="list-group-item">Duration: ${values.duration + " seconds"}</li>
+        <li class="list-group-item">Alpha: ${values.switchAlpha ? "Yes" : "No"}</li>
+        <li class="list-group-item">Codec: ${movRadio.checked ? "MOV" : mp4Radio.checked ? "MP4" : null}</li>
+      </ul>
+      <p class="text-center">${"Please check the rendered composition in the directory: " + outputPath}</p>
+    </div>
+  </div>
+</div>
+`;
+
       // Envia o objeto para o script JSX
-      csInterface.evalScript(`duplicatePrecompToOutput(${JSON.stringify(values)})`);
+      csInterface.evalScript(`duplicatePrecompToOutput(${JSON.stringify(values)})`, function (result) {
+        if (result === "1") {
+          showModalWithMessage("Rendering Complete!", listContent2, false);
+        }
+        if (result === "0") {
+          showModalWithMessage("Composition Created!", listContent, false);
+        }
+      });
     }
 
-    // Adiciona um evento de clique ao botão "Create Composition"
-    createCompositionBtn.addEventListener("click", () => sendValuesToJSX(false)); // Não renderiza
+    function showModalWithMessage(title, message, showProgress = true) {
+      document.querySelector(".modal-body").innerHTML = message; // Isso limpará o conteúdo anterior
+      if (showProgress) {
+        addProgressBar(); // Adiciona a barra de progresso
+      } else {
+        removeProgressBar(); // Remove a barra de progresso
+      }
+      document.querySelector(".modal-title").textContent = title;
+      modal.show();
+    }
+
+    createCompositionBtn.addEventListener("click", function () {
+      showModalWithMessage("Creating composition", "Awaiting....", true);
+      sendValuesToJSX(false);
+    });
 
     exportBtn.addEventListener("click", function () {
       const fileType = movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null;
       csInterface.evalScript(`chooseOutputPath("${fileType}")`, function (outputPath) {
         if (outputPath !== "null") {
           sendValuesToJSX(true, outputPath);
+          showModalWithMessage("Rendering in progress...", "Please wait and do not use the program until the process is complete.", true);
         } else {
           console.log("Seleção de caminho cancelada pelo usuário.");
         }
@@ -613,13 +749,33 @@
     // Adiciona um evento de clique ao botão "Create Composition"
   };
 
-  document.addEventListener("DOMContentLoaded", function () {
-    var testModalButton = document.getElementById("testModalButton");
-    if (testModalButton) {
-      testModalButton.addEventListener("click", function () {
-        showModal();
-        // onLoaded();
-      });
+  function removeProgressBar() {
+    const modalBody = document.querySelector(".modal-body");
+    const progressBarContainer = modalBody.querySelector(".progress");
+    if (progressBarContainer) {
+      modalBody.removeChild(progressBarContainer);
     }
-  });
+  }
+
+  function addProgressBar() {
+    // Criar o contêiner da barra de progresso
+    const progressBarContainer = document.createElement("div");
+    progressBarContainer.className = "progress mt-3";
+
+    // Criar a barra de progresso
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar progress-bar-striped progress-bar-animated";
+    progressBar.setAttribute("role", "progressbar");
+    progressBar.setAttribute("aria-valuenow", "100");
+    progressBar.setAttribute("aria-valuemin", "0");
+    progressBar.setAttribute("aria-valuemax", "100");
+    progressBar.style.width = "100%";
+
+    // Anexar a barra de progresso ao contêiner
+    progressBarContainer.appendChild(progressBar);
+
+    // Anexar o contêiner da barra de progresso ao .modal-body
+    const modalBody = document.querySelector(".modal-body");
+    modalBody.appendChild(progressBarContainer);
+  }
 })();

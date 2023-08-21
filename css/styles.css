@@ -21,9 +21,9 @@ body {
 }
 
 #data {
-  color: white;
+  /* color: white; */
 
-  /* color: #232323; */
+  color: #232323;
 }
 
 #customRange1 {
@@ -34,6 +34,11 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 0 10px;
+}
+
+.logo-container {
+  width: 200px;
+  padding: 10px;
 }
 
 #sliderTicks span {
@@ -91,4 +96,16 @@ p {
 }
 .fade:not(.fade) {
   opacity: 0;
+}
+
+/* Estilos para o modal */
+.modal-dialog {
+  max-width: 80%; /* Aumenta a largura do modal para 80% da largura da janela */
+}
+
+.cropped-image-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  margin-top: 20px; /* Espaçamento superior para separar da lista */
 }
