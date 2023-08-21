@@ -392,15 +392,15 @@
     }
   }
 
-  // function showModal() {
-  //   var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
-  //   myModal.show();
-  // }
+  function showModal() {
+    var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
+    myModal.show();
+  }
 
-  // function hideModal() {
-  //   var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
-  //   myModal.hide();
-  // }
+  function hideModal() {
+    var myModal = new bootstrap.Modal(document.getElementById("renderModal"), {});
+    myModal.hide();
+  }
 
   function checkAlpha() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
