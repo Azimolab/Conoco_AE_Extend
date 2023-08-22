@@ -64,38 +64,8 @@
 
     loadJSX()
 
-    // var csInterface = new CSInterface();
-
-    // // Adicione um ouvinte de evento para "renderComplete"
-    // csInterface.addEventListener("renderComplete", function (evt) {
-    //   if (evt.data === "success") {
-    //     alert("11111");
-    //     showRenderModal("Renderização concluída");
-    //   } else {
-    //     alert("22222");
-    //     showRenderModal("Erro na renderização: " + evt.data);
-    //   }
-    // });
-
-
   </script>
-  <!-- <script type="text/javascript">
 
-    $(document).ready(function () {
-
-
-      // For functions which require interaction at the JavaScript level, we provide these JQuery-based
-      // handlers, instead of directly invoking ExtendScript .This givs the JavaScript layer a chance
-      // to pass data into the ExtendScript layer, and process the results.
-
-      $("#sendtext").on("click", function (e) {
-        e.preventDefault();
-        var csInterface = new CSInterface();
-
-        csInterface.evalScript('$._ext.sendText()', myTextHandlerFunction);
-      });
-    });
-  </script> -->
 
   <link href="css/styles.css" rel="stylesheet" />
   <link href="css/cropper.css" rel="stylesheet" />
@@ -128,7 +98,7 @@
 <body class="bg-dark">
   <div class="container">
     <main>
-      <div class="py-4 text-center">
+      <div class="py-3 text-center">
         <!-- <h2>Checkout form</h2> -->
         <!-- <p class="lead">Below is an example form</p> -->
         <div class="logo-container d-inline-block">
@@ -138,16 +108,16 @@
       </div>
   </div>
 
-  <div class="row g-5">
+  <div class="row g-3">
     <div class="col-md-auto col-lg-12 w-100">
       <div class="row g-3">
-        <div class="col-md-1">
+        <div class="line col-md-1">
           <hr class="my-2" />
         </div>
         <div class="col-md-auto">
           <h6 class="mb-3">Design</h6>
         </div>
-        <div class="col-md">
+        <div class="line col-md">
           <hr class="my-2" />
         </div>
       </div>
@@ -180,14 +150,14 @@
           </div>
         </div>
 
-        <div class="my-2 row g-3">
-          <div class="col-md-1">
+        <div class="my-1 row g-3">
+          <div class="line col-md-1">
             <hr class="my-2" />
           </div>
           <div class="col-md-auto">
             <h6 class="mb-3">Size/Format</h6>
           </div>
-          <div class="col-md">
+          <div class="line col-md">
             <hr class="my-2" />
           </div>
         </div>
@@ -235,14 +205,14 @@
         </div>
 
 
-        <div class="row g-3 my-2">
-          <div class="col-md-1">
+        <div class="row g-3 my-1">
+          <div class="line col-md-1">
             <hr class="my-2" />
           </div>
           <div class="col-md-auto">
             <h6 class="mb-3">Duration</h6>
           </div>
-          <div class="col-md">
+          <div class="line col-md">
             <hr class="my-2" />
           </div>
         </div>
@@ -279,102 +249,110 @@
             </div>
           </div>
 
-          <script>
-
-          </script>
+        </div>
 
 
-
-          <div class="my-2 row g-3">
-            <div class="col-md-1">
-              <hr class="my-2" />
-            </div>
-            <div class="col-md-auto">
-              <h6 class="mb-3">Export settings</h6>
-            </div>
-            <div class="col-md">
-              <hr class="my-2" />
-            </div>
+        <div class="my-1 row g-3">
+          <div class="line col-md-1">
+            <hr class="my-2" />
           </div>
+          <div class="col-md-auto">
+            <h6 class="mb-3">Export settings</h6>
+          </div>
+          <div class="line col-md">
+            <hr class="my-2" />
+          </div>
+        </div>
 
 
-          <div class="row">
+        <div class="row g-2 ">
 
-            <div class="row">
 
-              <div class="col-md-2">
+
+          <div class="col-md">
+
+            <div class="form-group">
+              <label for="country" class="form-label">File Name</label>
+              <input type="text" class="form-control" id="FileNameInput" placeholder="Example input">
+            </div>
+
+            <!-- <small class="text-muted">set manual duration</small> -->
+          </div>
+          <div class="col-md-4">
+
+            <div class="row mt-4 mx-1">
+
+              <div class="row ">
+
+                <div class="col-md-5">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gridRadios" id="MOV_file" value="option1"
+                      checked>
+                    <label class="form-check-label" for="gridRadios1">
+                      MOV
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-md-7">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="switch_alpha">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">ALPHA</label>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-md">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="gridRadios" id="MOV_file" value="option1" checked>
-                  <label class="form-check-label" for="gridRadios1">
-                    MOV
+                  <input class="form-check-input" type="radio" name="gridRadios" id="MP4_file" value="option2">
+                  <label class="form-check-label" for="gridRadios2">
+                    MP4
                   </label>
                 </div>
               </div>
 
-              <div class="col-md-10">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="switch_alpha">
-                  <label class="form-check-label" for="flexSwitchCheckDefault">ALPHA</label>
-                </div>
-
-              </div>
 
             </div>
 
-
-            <div class="col-md-12">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="gridRadios" id="MP4_file" value="option2">
-                <label class="form-check-label" for="gridRadios2">
-                  MP4
-                </label>
-              </div>
-            </div>
-
-
+            <!-- <small class="text-muted">set manual duration</small> -->
           </div>
+        </div>
 
-          <script>
-              // document.addEventListener('DOMContentLoaded', (event) => {
-              //   // Get references to the elements
-              //   const movRadio = document.getElementById('MOV_file');
-              //   const mp4Radio = document.getElementById('MP4_file');
-              //   const alphaSwitch = document.getElementById('switch_apha');
 
-              //   // Disable the switch initially if MOV is not checked
-              //   alphaSwitch.disabled = !movRadio.checked;
 
-              //   // Listen for changes on the radio buttons
-              //   movRadio.addEventListener('change', updateSwitch);
-              //   mp4Radio.addEventListener('change', updateSwitch);
 
-              //   // Function to enable or disable the switch based on the selected radio button
-              //   function updateSwitch() {
-              //     alphaSwitch.disabled = !movRadio.checked;
-              //   }
-              // });
-          </script>
 
-          <div class="my-2 row g-3">
-            <div class="col-md-1">
-              <hr class="my-2" />
-            </div>
-            <div class="col-md-auto">
-              <h6 class="mb-3">Preview</h6>
-            </div>
-            <div class="col-md">
-              <hr class="my-2" />
-            </div>
+
+
+
+
+        <script>
+
+        </script>
+
+        <div class="my-1 row g-3">
+          <div class="line col-md-1">
+            <hr class="my-2" />
           </div>
-
-
-          <div class="image-container" style="height: auto;">
-            <div>
-              <img id="image" src="./assets/smm/smm_aqua_only.png" style="max-width: 100%; height: auto;" />
-            </div>
+          <div class="col-md-auto">
+            <h6 class="mb-3">Preview</h6>
           </div>
-          <p><span id="data"></span></p>
+          <div class="line col-md">
+            <hr class="my-2" />
+          </div>
+        </div>
 
+
+        <div class="image-container" style="height: auto;">
+          <div>
+            <img id="image" src="./assets/smm/smm_aqua_only.png" style="max-width: 100%; height: auto;" />
+          </div>
+        </div>
+
+        <div class="my-1 row g-3">
           <div class="d-flex justify-content-end gap-2">
 
             <button class="btn btn-primary custom-btn" type="button" id="create-composition">
@@ -384,17 +362,16 @@
               <i class="bi bi-upload"></i> Export
             </button>
           </div>
-
         </div>
 
+    </div>
 
-        <div id="previewSection">
 
+    <div id="previewSection">
+      <p><span id="data"></span></p>
       </form>
     </div>
     <!-- <button type="button" class="btn btn-primary" id="testModalBtn">Testar Modal</button> -->
-
-
     </main>
   </div>
   </main>

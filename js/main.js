@@ -27,6 +27,7 @@
   const movRadio = document.getElementById("MOV_file");
   const mp4Radio = document.getElementById("MP4_file");
   const resolution = document.getElementById("resolution_select");
+  const fileNameInput = document.getElementById("FileNameInput");
 
   let cropper;
   var csInterface = new CSInterface();
@@ -91,7 +92,7 @@
     "4:3": { x: 0, y: 0, width: 750, aspectRatio: 4 / 3 },
     "21:9": { x: 0, y: 0, width: 998, aspectRatio: 21 / 9 },
     "9:21": { x: 0, y: 0, width: 241, aspectRatio: 9 / 21 },
-    "1:1": { x: 0, y: 0, width: 563, aspectRatio: 1 },
+    "1:1": { x: 0, y: 0, width: 560, aspectRatio: 1 },
   };
 
   const AR4 = {
@@ -460,6 +461,10 @@
 
   // Event listeners
   window.onload = function () {
+    //  alert("onload");
+
+    //openExplorerOrFinder(outputPath);
+
     populateDropdown(style, Object.keys(imagesData));
     // checkInputs;
 
@@ -468,6 +473,7 @@
       version.onchange();
       checkAlpha();
       updateRdurationSettings();
+      updateFileNameInput();
     };
 
     version.onchange = function () {
@@ -475,6 +481,7 @@
       color_scheme.onchange();
       checkAlpha();
       updateRdurationSettings();
+      updateFileNameInput();
     };
 
     color_scheme.onchange = function () {
@@ -493,6 +500,7 @@
       aspect_ratio_select.onchange();
       checkAlpha();
       updateRdurationSettings();
+      updateFileNameInput();
     };
 
     crop_select.onchange = function () {
@@ -586,53 +594,35 @@
         render: render,
         switchAlpha: switch_alpha.checked,
         fileType: movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null,
+        fileName: fileNameInput.value,
       };
 
-      //       let listContent = `
-      // <div class="container mt-5">
-      //   <div class="row justify-content-center">
-      //     <div class="col-md-8">
-      //       <div class="cropped-image-container mb-4 text-center shadow">
-      //         <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" style="max-width: 80%;" />
-      //       </div>
-      //       <div class="bg-white p-4 rounded shadow">
-      //         <h5 class="mb-3 text-muted text-center">Settings</h5>
-      //         <ul class="list-group list-group-flush mb-3">
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-aspect-ratio"></i> Style</span>
-      //             <span>${values.style}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-version"></i> Version</span>
-      //             <span>${values.version}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-palette"></i> Color Scheme</span>
-      //             <span>${values.colorScheme}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-tv"></i> Resolution</span>
-      //             <span>${values.resolution}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-aspect-ratio-fill"></i> Aspect Ratio</span>
-      //             <span>${values.aspectRatio}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-clock"></i> Duration</span>
-      //             <span>${values.duration + " seconds"}</span>
-      //           </li>
-      //           <li class="list-group-item d-flex justify-content-between align-items-center">
-      //             <span><i class="bi bi-eye${values.switchAlpha ? "-slash" : ""}"></i> Alpha</span>
-      //             <span>${values.switchAlpha ? "Yes" : "No"}</span>
-      //           </li>
-      //         </ul>
-      //         <p class="text-center text-muted">Check the composition in the 'Output' folder.</p>
-      //       </div>
-      //     </div>
-      //   </div>
-      // </div>
-      // `;
+      function openExplorerOrFinder(paths) {
+        var os = csInterface.getOSInformation();
+        // alert(os);
+        if (os.indexOf("Windows") !== -1) {
+          // Para Windows
+          //alert("explorer");
+          window.cep.process.createProcess("C:\\Windows\\explorer.exe", paths);
+          //csInterface.evalScript("system.callSystem('cmd.exe /c start explorer .')");
+        } else if (os.indexOf("Mac") !== -1) {
+          // Para macOS
+          csInterface.evalScript("system.callSystem('open .')");
+        }
+      }
+
+      function openFile() {
+        openExplorerOrFinder(outputPath);
+      }
+
+      function openDirectory() {
+        var path = outputPath;
+        var lastSlashIndex = path.lastIndexOf("\\");
+        if (lastSlashIndex !== -1) {
+          path = path.substring(0, lastSlashIndex);
+        }
+        openExplorerOrFinder(path);
+      }
 
       let listContent = `
 <div class="container mt-3 text-white">
@@ -640,19 +630,21 @@
         <div class="col-md-10">
             <!-- Div da Imagem -->
             <div class="cropped-image-container mb-3 text-center">
-                <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" />
+                <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded border" />
             </div>
             
             <!-- Div da Tabela -->
+            <div class="row justify-content-center">
+            <div class="col-md-8" >
             <div class="table-responsive mb-3">
                 <table class="table table-dark table-sm">
                     <tbody>
                         <tr>
-                            <td><i class="bi bi-aspect-ratio"></i> Style</td>
+                            <td><i class="bi bi-images"></i> Style</td>
                             <td>${values.style}</td>
                         </tr>
                         <tr>
-                            <td><i class="bi bi-version"></i> Version</td>
+                            <td><i class="bi bi-collection"></i> Version</td>
                             <td>${values.version}</td>
                         </tr>
                         <tr>
@@ -660,8 +652,8 @@
                             <td>${values.colorScheme}</td>
                         </tr>
                         <tr>
-                            <td><i class="bi bi-tv"></i> Resolution</td>
-                            <td>${values.resolution}</td>
+                            <td><i class="bi bi-tv"></i> Resolution (w)</td>
+                            <td>${values.resolution + "p"}</td>
                         </tr>
                         <tr>
                             <td><i class="bi bi-aspect-ratio-fill"></i> Aspect Ratio</td>
@@ -678,33 +670,77 @@
                     </tbody>
                 </table>
             </div>
-            
-            <p class="text-center fs-5">Check the composition in the 'Output' folder.</p>
+            </div>
+            </div>
+            <p class="text-center fs-7">Check the composition in the 'Output' folder</p>
         </div>
     </div>
 </div>
 `;
 
       let listContent2 = `
-<div class="container mt-3">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="cropped-image-container mb-3 text-center">
-        <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded" />
-      </div>
-      <ul class="list-group mb-3">
-        <li class="list-group-item">Style: ${values.style}</li>
-        <li class="list-group-item">Version: ${values.version}</li>
-        <li class="list-group-item">Color Scheme: ${values.colorScheme}</li>
-        <li class="list-group-item">Resolution: ${values.resolution}</li>
-        <li class="list-group-item">Aspect Ratio: ${values.aspectRatio}</li>
-        <li class="list-group-item">Duration: ${values.duration + " seconds"}</li>
-        <li class="list-group-item">Alpha: ${values.switchAlpha ? "Yes" : "No"}</li>
-        <li class="list-group-item">Codec: ${movRadio.checked ? "MOV" : mp4Radio.checked ? "MP4" : null}</li>
-      </ul>
-      <p class="text-center">${"Please check the rendered composition in the directory: " + outputPath}</p>
+<div class="container mt-3 text-white">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Div da Imagem -->
+            <div class="cropped-image-container mb-3 text-center">
+                <img src="${croppedImageSrc}" alt="Cropped Image" class="img-fluid rounded border" />
+            </div>
+            
+            <!-- Div da Tabela -->
+            <div class="row justify-content-center">
+            <div class="col-md-8" >
+            <div class="table-responsive mb-3">
+                <table class="table table-dark table-sm">
+                    <tbody>
+                        <tr>
+                            <td><i class="bi bi-images"></i> Style</td>
+                            <td>${values.style}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-collection"></i> Version</td>
+                            <td>${values.version}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-palette"></i> Color Scheme</td>
+                            <td>${values.colorScheme}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-tv"></i> Resolution (w)</td>
+                            <td>${values.resolution + "p"}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-aspect-ratio-fill"></i> Aspect Ratio</td>
+                            <td>${values.aspectRatio}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-clock"></i> Duration</td>
+                            <td>${values.duration + " seconds"}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-eye"></i> Alpha</td>
+                            <td>${values.switchAlpha ? "Yes" : "No"}</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-file-earmark-play"></i> Format</td>
+                            <td>${movRadio.checked ? "Mov" : mp4Radio.checked ? "Mp4" : null}</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+            </div>
+            </div>
+            <div class="text-center">
+    <p class="fs-7">Please check the rendered composition in the directory: ${outputPath}</p>
+<div class="btn-group">
+<button class="btn btn-outline-secondary" type="button" id="openFileBtn">Open File</button>
+<button class="btn btn-outline-secondary" type="button" id="openDirectoryBtn">Open Directory</button>
+
+</div>
+</div>
+        </div>
     </div>
-  </div>
 </div>
 `;
 
@@ -712,6 +748,8 @@
       csInterface.evalScript(`duplicatePrecompToOutput(${JSON.stringify(values)})`, function (result) {
         if (result === "1") {
           showModalWithMessage("Rendering Complete!", listContent2, false);
+          document.getElementById("openFileBtn").addEventListener("click", openFile);
+          document.getElementById("openDirectoryBtn").addEventListener("click", openDirectory);
         }
         if (result === "0") {
           showModalWithMessage("Composition Created!", listContent, false);
@@ -736,11 +774,17 @@
     });
 
     exportBtn.addEventListener("click", function () {
+      const desiredFileName = fileNameInput.value; // Recupera o valor do input
+
       const fileType = movRadio.checked ? "mov" : mp4Radio.checked ? "mp4" : null;
-      csInterface.evalScript(`chooseOutputPath("${fileType}")`, function (outputPath) {
+
+      // Passe o desiredFileName como um argumento adicional
+      csInterface.evalScript(`chooseOutputPath("${fileType}", "${desiredFileName}")`, function (outputPath) {
         if (outputPath !== "null") {
+          var msg2 = "Please wait and do not use the program until the process is complete.";
+
           sendValuesToJSX(true, outputPath);
-          showModalWithMessage("Rendering in progress...", "Please wait and do not use the program until the process is complete.", true);
+          showModalWithMessage("Rendering in progress...", msg2, true);
         } else {
           console.log("Seleção de caminho cancelada pelo usuário.");
         }
@@ -755,6 +799,10 @@
     if (progressBarContainer) {
       modalBody.removeChild(progressBarContainer);
     }
+  }
+
+  function updateFileNameInput() {
+    fileNameInput.value = style.value + " " + version.value + " " + color_scheme.value;
   }
 
   function addProgressBar() {
@@ -778,4 +826,8 @@
     const modalBody = document.querySelector(".modal-body");
     modalBody.appendChild(progressBarContainer);
   }
+
+  // Chame a função quando necessário
+
+  // Chame a função quando necessário
 })();

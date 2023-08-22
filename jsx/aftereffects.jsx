@@ -246,7 +246,7 @@ function duplicatePrecompToOutput(values) {
     return;
   }
 
-  var sufix = values.style + " " + values.version + " " + values.colorScheme + " " + aspectRatio;
+  var sufix = values.fileName;
 
   // Faz uma duplicação profunda da pré-composição
   var duplicatedPrecomp = deepDuplicateComp(precompItem, sufix);
@@ -329,11 +329,6 @@ function duplicatePrecompToOutput(values) {
 
   ScaleCompositionByWidth(duplicatedPrecomp, resolution);
 
-  if (!values.render) {
-    // alert("0");
-    return "0";
-  }
-
   openComposition(duplicatedPrecomp);
 
   var renderSettings = {
@@ -345,7 +340,7 @@ function duplicatePrecompToOutput(values) {
   };
 
   var outputSettings = {
-    format: values.fileType === "mov" ? "MOV" : "H.264",
+    format: values.fileType === "mov" ? "High Quality with Alpha" : "H.264 - Match Render Settings - 15 Mbps",
     channel: "RGB+Alpha",
     destination: values.outputPath,
     colorDepth: "Millions of Colors+", // 8-bits = "Millions of Colors", 16-bits = "Trillions of Colors", 32-bits = "Floating Point"
@@ -360,6 +355,8 @@ function duplicatePrecompToOutput(values) {
       // alert("1");
       return "1";
     }
+  } else {
+    return "0";
   }
 }
 
@@ -429,8 +426,8 @@ function scaleAllCameraZooms(theComp, scaleBy) {
   }
 }
 
-function chooseOutputPath(fileType) {
-  var saveFile = new File();
+function chooseOutputPath(fileType, defaultFileName) {
+  var saveFile = new File("~/Desktop/" + defaultFileName + "." + (fileType === "mov" ? "mov" : "mp4")); // Usa o nome do arquivo passado
   var fileFilter = fileType === "mov" ? "MOV:*.mov" : "MP4:*.mp4";
   saveFile = saveFile.saveDlg("Salvar Como", fileFilter);
   if (saveFile != null) {
@@ -439,6 +436,7 @@ function chooseOutputPath(fileType) {
     return null; // Usuário cancelou o diálogo
   }
 }
+
 function renderComposition(comp, renderSettings, outputSettings) {
   while (app.project.renderQueue.numItems > 0) {
     app.project.renderQueue.item(1).remove();
