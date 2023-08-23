@@ -185,6 +185,131 @@ function findItemByName(name) {
 }
 
 function duplicatePrecompToOutput(values) {
+  var precompName = values.style + " " + values.colorScheme;
+  var customDuration = parseFloat(values.duration);
+
+  var path = values.path + "/library/";
+
+  var Name = "Template_Library";
+  var resolution = parseFloat(values.resolution);
+  var roi = values.roi;
+  var render = values.render;
+  var aspectRatio = values.aspectRatio.replace(":", "X"); // Aqui está a mudança
+
+  importAEPFile(path, Name);
+
+  //alert(values.resolution);
+
+  var ConocoFolder = findItemByName("Conoco");
+  if (!ConocoFolder || !(ConocoFolder instanceof FolderItem)) {
+    alert("Pasta 'Conoco' não encontrada! Criando uma nova...");
+    ConocoFolder = app.project.items.addFolder("Conoco");
+  }
+  var libraryFolder = findItemByName("Library", ConocoFolder); // Em seguida, procuramos a pasta "Library" dentro de "ASD"
+
+  if (!libraryFolder || !(libraryFolder instanceof FolderItem)) {
+    alert("Pasta 'Library' não encontrada!");
+    return;
+  }
+  // Procura a subpasta correta dentro da pasta "Library" com base em values.style
+  var styleFolder;
+  switch (values.style) {
+    case "Solid Mark Motif":
+      precompName = values.style + " " + values.colorScheme;
+      styleFolder = findItemByName("Solid Mark Motif", libraryFolder);
+      // alert(precompName);
+      break;
+    case "Linear Mark Motif":
+      var firstWord = values.colorScheme.split(" ")[0];
+      precompName = values.style + " " + firstWord;
+      styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
+      // alert(precompName);
+
+      if (values.version === "Main") {
+        var firstWord = values.colorScheme.split(" ")[0];
+        precompName = values.style + " " + firstWord;
+        styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
+      } else {
+        var firstWord = values.colorScheme.split(" ")[0];
+        precompName = values.style + " " + firstWord;
+        styleFolder = findItemByName("Linear Mark Motif Text Frame", libraryFolder);
+      }
+
+      break;
+    case "3D":
+      styleFolder = findItemByName("3D", libraryFolder);
+
+      var folder10 = findItemByName(values.duration, styleFolder);
+      //alert(values.duration);
+
+      styleFolder = folder10;
+      precompName = values.style + " " + values.duration + " " + aspectRatio;
+      // alert(precompName);
+      break;
+    case "Ribbon":
+      // alert("1");
+      styleFolder = findItemByName("Ribbon", libraryFolder);
+      // alert("2");
+      var folder11 = findItemByName(values.duration, styleFolder);
+      // alert("3");
+
+      styleFolder = folder11;
+      // alert("4");
+      precompName = values.style + " " + values.duration + " " + aspectRatio;
+
+      // alert("5");
+
+      break;
+  }
+
+  // alert(precompName);
+
+  if (!styleFolder || !(styleFolder instanceof FolderItem)) {
+    alert("Subpasta correspondente a '" + values.style + "' não encontrada na pasta 'Library'!");
+    return;
+  }
+
+  // Busca a composição dentro da subpasta correta
+  var precompItem = null;
+  for (var i = 1; i <= styleFolder.numItems; i++) {
+    var item = styleFolder.item(i);
+    // alert(item.name);
+    if (item.name === precompName && item instanceof CompItem) {
+      precompItem = item;
+      break;
+    }
+  }
+
+  if (!precompItem) {
+    alert("Pré-composição '" + precompName + "' não encontrada na pasta '" + values.style + "'!");
+    return;
+  }
+
+  var sufix = values.fileName;
+
+  // Faz uma duplicação profunda da pré-composição
+  var duplicatedPrecomp = deepDuplicateComp(precompItem, sufix);
+
+  if (values.style === "Solid Mark Motif" || values.style === "Linear Mark Motif") {
+    if (roi) {
+      // Ajusta a posição de todas as camadas com base nas coordenadas x e y da região de interesse
+
+      roi.x = Math.round(roi.x * 1.92);
+      roi.width = Math.round(roi.width * 1.92);
+      roi.y = Math.round(roi.y * 1.92);
+      roi.height = Math.round(roi.height * 1.92);
+
+      adjustLayerPositions(duplicatedPrecomp, roi.x, roi.y);
+
+      // Define a região de interesse e ajusta a largura e altura da composição
+      duplicatedPrecomp.width = roi.width;
+      duplicatedPrecomp.height = roi.height;
+      duplicatedPrecomp.regionOfInterest = [0, 0, roi.width, roi.height];
+
+      // A região de interesse começa no canto superior esquerdo após reposicionar as camadas
+    }
+  }
+
   var colorMapping = {
     Teal: {
       BG: [0x00 / 255, 0x3e / 255, 0x44 / 255], // 003E44
@@ -233,127 +358,6 @@ function duplicatePrecompToOutput(values) {
     },
   };
 
-  var precompName = values.style + " " + values.colorScheme;
-  var customDuration = parseFloat(values.duration);
-
-  var path = values.path + "/library/";
-
-  var Name = "Template_Library";
-  var resolution = parseFloat(values.resolution);
-  var roi = values.roi;
-  var render = values.render;
-  var aspectRatio = values.aspectRatio.replace(":", "X"); // Aqui está a mudança
-
-  importAEPFile(path, Name);
-
-  //alert(values.resolution);
-
-  var ConocoFolder = findItemByName("Conoco");
-  if (!ConocoFolder || !(ConocoFolder instanceof FolderItem)) {
-    alert("Pasta 'Conoco' não encontrada! Criando uma nova...");
-    ConocoFolder = app.project.items.addFolder("Conoco");
-  }
-  var libraryFolder = findItemByName("Library", ConocoFolder); // Em seguida, procuramos a pasta "Library" dentro de "ASD"
-
-  if (!libraryFolder || !(libraryFolder instanceof FolderItem)) {
-    alert("Pasta 'Library' não encontrada!");
-    return;
-  }
-  // Procura a subpasta correta dentro da pasta "Library" com base em values.style
-  var styleFolder;
-  switch (values.style) {
-    case "Solid Mark Motif":
-      precompName = values.style + " " + values.colorScheme;
-      styleFolder = findItemByName("Solid Mark Motif", libraryFolder);
-      break;
-    case "Linear Mark Motif":
-      var firstWord = values.colorScheme.split(" ")[0];
-      precompName = values.style + " " + firstWord;
-      styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
-
-      if (values.version === "Main") {
-        var firstWord = values.colorScheme.split(" ")[0];
-        precompName = values.style + " " + firstWord;
-        styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
-      } else {
-        var firstWord = values.colorScheme.split(" ")[0];
-        precompName = values.style + " " + firstWord;
-        styleFolder = findItemByName("Linear Mark Motif Text Frame", libraryFolder);
-      }
-
-      break;
-    case "3D":
-      styleFolder = findItemByName("3D", libraryFolder);
-
-      var folder10 = findItemByName(values.duration, styleFolder);
-      //alert(values.duration);
-
-      styleFolder = folder10;
-      precompName = values.style + " " + values.duration + " " + aspectRatio;
-      //alert(precompName);
-      break;
-    case "Ribbon":
-      styleFolder = findItemByName("Ribbon", libraryFolder);
-
-      var folder10 = findItemByName(values.duration, styleFolder);
-      //alert(values.duration);
-
-      styleFolder = folder10;
-      precompName = values.style + " " + values.duration + " " + aspectRatio;
-
-      alert("Ribbon");
-
-      break;
-  }
-
-  // alert(precompName);
-
-  if (!styleFolder || !(styleFolder instanceof FolderItem)) {
-    alert("Subpasta correspondente a '" + values.style + "' não encontrada na pasta 'Library'!");
-    return;
-  }
-
-  // Busca a composição dentro da subpasta correta
-  var precompItem = null;
-  for (var i = 1; i <= styleFolder.numItems; i++) {
-    var item = styleFolder.item(i);
-    alert(item.name);
-    if (item.name === precompName && item instanceof CompItem) {
-      precompItem = item;
-      break;
-    }
-  }
-
-  if (!precompItem) {
-    alert("Pré-composição '" + precompName + "' não encontrada na pasta '" + values.style + "'!");
-    return;
-  }
-
-  var sufix = values.fileName;
-
-  // Faz uma duplicação profunda da pré-composição
-  var duplicatedPrecomp = deepDuplicateComp(precompItem, sufix);
-
-  if (values.style === "Solid Mark Motif" || values.style === "Linear Mark Motif") {
-    if (roi) {
-      // Ajusta a posição de todas as camadas com base nas coordenadas x e y da região de interesse
-
-      roi.x = Math.round(roi.x * 1.92);
-      roi.width = Math.round(roi.width * 1.92);
-      roi.y = Math.round(roi.y * 1.92);
-      roi.height = Math.round(roi.height * 1.92);
-
-      adjustLayerPositions(duplicatedPrecomp, roi.x, roi.y);
-
-      // Define a região de interesse e ajusta a largura e altura da composição
-      duplicatedPrecomp.width = roi.width;
-      duplicatedPrecomp.height = roi.height;
-      duplicatedPrecomp.regionOfInterest = [0, 0, roi.width, roi.height];
-
-      // A região de interesse começa no canto superior esquerdo após reposicionar as camadas
-    }
-  }
-
   switch (values.style) {
     case "Solid Mark Motif":
       if (values.version === "Without Lines") {
@@ -377,7 +381,7 @@ function duplicatePrecompToOutput(values) {
 
       break;
     case "Linear Mark Motif":
-      var thirdWord = values.colorScheme.split(" ")[0];
+      var thirdWord = values.colorScheme.split(" ")[3];
 
       var offsetTime = customDuration - 5;
 

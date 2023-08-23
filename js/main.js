@@ -17,6 +17,7 @@
   const forms = document.querySelectorAll(".needs-validation");
   const style = document.getElementById("style");
   const version = document.getElementById("version");
+  const aspect_ratio_select = document.getElementById("aspect_ratio_select");
   const color_scheme = document.getElementById("color_scheme");
   const crop_select = document.getElementById("crop_select");
   const image = document.getElementById("image");
@@ -409,7 +410,7 @@
       switch_alpha.checked = false;
     }
 
-    console.log(chosenData.alpha);
+    // console.log(chosenData.alpha);
   }
 
   // Função que será chamada sempre que o checkbox for alterado
@@ -441,6 +442,8 @@
         let index = valor / 5;
         sliderTicksElement.children[index - 1].classList.add("desabilitado");
       }
+      customRange1Element.value = 15;
+      ccNameElement.value = 15;
     } else {
       ccNameElement.disabled = false;
       for (let valor of valoresDesabilitados) {
@@ -448,10 +451,7 @@
         sliderTicksElement.children[index - 1].classList.remove("desabilitado");
       }
     }
-
     // Reset slider value to 15
-    customRange1Element.value = 15;
-    ccNameElement.value = 15;
   }
 
   // Ouve eventos de alteração em todos os campos de entrada
@@ -471,15 +471,17 @@
     style.onchange = function () {
       populateDropdown(version, Object.keys(imagesData[this.value]));
       version.onchange();
-      checkAlpha();
-      updateRdurationSettings();
+      switch_alpha.onchange();
+      //checkAlpha();
+      //updateRdurationSettings();
       updateFileNameInput();
     };
 
     version.onchange = function () {
       populateDropdown(color_scheme, Object.keys(imagesData[style.value][this.value]));
       color_scheme.onchange();
-      checkAlpha();
+      //checkAlpha();
+      //switch_alpha.onchange();
       updateRdurationSettings();
       updateFileNameInput();
     };
@@ -497,9 +499,10 @@
       }
 
       aspect_ratio_select.disabled = !this.value;
-      aspect_ratio_select.onchange();
-      checkAlpha();
-      updateRdurationSettings();
+      //aspect_ratio_select.onchange();
+      //checkAlpha();
+      //updateRdurationSettings();
+      switch_alpha.onchange();
       updateFileNameInput();
     };
 
@@ -513,31 +516,26 @@
         cropOption = "100%"; // force crop option to be 100% if lock is true
       }
 
-      checkAlpha();
-      initCropper(chosenData, aspectRatio, lock, cropOption);
+      switch_alpha.onchange();
+      //initCropper(chosenData, aspectRatio, lock, cropOption);
     };
+
     aspect_ratio_select.onchange = function () {
       const chosenData = imagesData[style.value][version.value][color_scheme.value];
       const aspectRatio = this.value;
       const lock = chosenData.lock;
       const cropOption = crop_select.value;
-      console.log(aspectRatio);
-      checkAlpha();
-      initCropper(chosenData, aspectRatio, lock, cropOption);
-    };
-
-    crop_select.onchange = function () {
-      const chosenData = imagesData[style.value][version.value][color_scheme.value];
-      const aspectRatio = aspect_ratio_select.value;
-      const lock = chosenData.lock;
-      const cropOption = this.value;
-      checkAlpha();
-      initCropper(chosenData, aspectRatio, lock, cropOption);
+      //console.log(aspectRatio);
+      // checkAlpha();
+      switch_alpha.onchange();
+      // initCropper(chosenData, aspectRatio, lock, cropOption);
     };
 
     switch_alpha.onchange = function () {
       const chosenData = imagesData[style.value][version.value][color_scheme.value];
+      var thirdWord = color_scheme.value.split(" ")[3];
 
+      console.log(thirdWord);
       const isSwitchChecked = switch_alpha.checked;
       const aspectRatio = aspect_ratio_select.value;
       const lock = chosenData.lock;
@@ -546,21 +544,34 @@
       let selectedData;
 
       if (isSwitchChecked) {
-        const newChosenData = Object.assign({}, chosenData);
-        newChosenData.img = newChosenData.img.replace(".png", "_alpha.png");
-        selectedData = newChosenData;
+        if (style.value === "Solid Mark Motif") {
+          const newChosenData = Object.assign({}, chosenData);
+          newChosenData.img = newChosenData.img.replace(".png", "_alpha.png");
+          selectedData = newChosenData;
+        } else if ((style.value === "Linear Mark Motif" || style.value === "Ribbon" || style.value === "3D") & (thirdWord === "White")) {
+          const newChosenData = Object.assign({}, chosenData);
+          newChosenData.img = newChosenData.img.replace(".png", "_alpha.png");
+          selectedData = newChosenData;
+        } else {
+          const newChosenData = Object.assign({}, chosenData);
+          selectedData = newChosenData;
+          switch_alpha.disabled = true;
+          switch_alpha.checked = false;
+        }
       } else {
+        const newChosenData = Object.assign({}, chosenData);
+        switch_alpha.disabled = false;
         selectedData = chosenData;
       }
 
-      console.log(selectedData);
+      //  console.log(selectedData);
 
       initCropper(selectedData, aspectRatio, lock, cropOption);
     };
 
     resolution_select.onchange = function () {
       // Actions to be performed on resolution change can be added here
-      console.log("Resolution changed to: " + this.value);
+      //  console.log("Resolution changed to: " + this.value);
       // For now, just logging the change to the console
     };
 
@@ -586,7 +597,7 @@
         colorScheme: color_scheme.value,
         cropSelect: crop_select.value,
         resolution: resolution.value,
-        aspectRatio: document.getElementById("aspect_ratio_select").value,
+        aspectRatio: aspect_ratio_select.value,
         duration: document.getElementById("customRange1").value,
         roi: roi,
         path: path,

@@ -380,23 +380,23 @@
     image.src = imageData.img;
   }
   // Verifique se todos os campos estão preenchidos
-  function checkInputs() {
-    let allFilled = true;
-    inputs.forEach((input) => {
-      if (input.value === "") {
-        allFilled = false;
-      }
-    });
+  // function checkInputs() {
+  //   let allFilled = true;
+  //   inputs.forEach((input) => {
+  //     if (input.value === "") {
+  //       allFilled = false;
+  //     }
+  //   });
 
-    // Se todos os campos estiverem preenchidos, habilite os botões. Caso contrário, desabilite-os
-    if (allFilled) {
-      createCompositionBtn.disabled = false;
-      exportBtn.disabled = false;
-    } else {
-      createCompositionBtn.disabled = true;
-      exportBtn.disabled = true;
-    }
-  }
+  //   // Se todos os campos estiverem preenchidos, habilite os botões. Caso contrário, desabilite-os
+  //   if (allFilled) {
+  //     createCompositionBtn.disabled = false;
+  //     exportBtn.disabled = false;
+  //   } else {
+  //     createCompositionBtn.disabled = true;
+  //     exportBtn.disabled = true;
+  //   }
+  // }
 
   function checkAlpha() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
@@ -409,7 +409,7 @@
       switch_alpha.checked = false;
     }
 
-    console.log(chosenData.alpha);
+    // console.log(chosenData.alpha);
   }
 
   // Função que será chamada sempre que o checkbox for alterado
@@ -420,7 +420,7 @@
       // Checkbox foi desmarcado
       console.log("Checkbox desmarcado");
     }
-    checkAlpha();
+    //checkAlpha();
   }
 
   // Adiciona o evento de "change" ao checkbox
@@ -455,9 +455,9 @@
   }
 
   // Ouve eventos de alteração em todos os campos de entrada
-  inputs.forEach((input) => {
-    input.addEventListener("change", checkInputs);
-  });
+  // inputs.forEach((input) => {
+  //   input.addEventListener("change", checkInputs);
+  // });
 
   // Event listeners
   window.onload = function () {
@@ -471,17 +471,17 @@
     style.onchange = function () {
       populateDropdown(version, Object.keys(imagesData[this.value]));
       version.onchange();
-      checkAlpha();
-      updateRdurationSettings();
+      // checkAlpha();
+      //updateRdurationSettings();
       updateFileNameInput();
     };
 
     version.onchange = function () {
       populateDropdown(color_scheme, Object.keys(imagesData[style.value][this.value]));
-      color_scheme.onchange();
-      checkAlpha();
-      updateRdurationSettings();
-      updateFileNameInput();
+      //color_scheme.onchange();
+      // checkAlpha();
+      // updateRdurationSettings();
+      //updateFileNameInput();
     };
 
     color_scheme.onchange = function () {
@@ -497,9 +497,9 @@
       }
 
       aspect_ratio_select.disabled = !this.value;
-      aspect_ratio_select.onchange();
-      checkAlpha();
-      updateRdurationSettings();
+      //aspect_ratio_select.onchange();
+      //checkAlpha();
+      //updateRdurationSettings();
       updateFileNameInput();
     };
 
@@ -513,7 +513,7 @@
         cropOption = "100%"; // force crop option to be 100% if lock is true
       }
 
-      checkAlpha();
+      //checkAlpha();
       initCropper(chosenData, aspectRatio, lock, cropOption);
     };
     aspect_ratio_select.onchange = function () {
@@ -521,8 +521,8 @@
       const aspectRatio = this.value;
       const lock = chosenData.lock;
       const cropOption = crop_select.value;
-      console.log(aspectRatio);
-      checkAlpha();
+      // console.log(aspectRatio);
+      //checkAlpha();
       initCropper(chosenData, aspectRatio, lock, cropOption);
     };
 
@@ -531,7 +531,7 @@
       const aspectRatio = aspect_ratio_select.value;
       const lock = chosenData.lock;
       const cropOption = this.value;
-      checkAlpha();
+      // checkAlpha();
       initCropper(chosenData, aspectRatio, lock, cropOption);
     };
 
@@ -553,7 +553,7 @@
         selectedData = chosenData;
       }
 
-      console.log(selectedData);
+      //  console.log(selectedData);
 
       initCropper(selectedData, aspectRatio, lock, cropOption);
     };
@@ -564,7 +564,7 @@
       // For now, just logging the change to the console
     };
 
-    style.onchange(); // Populate the dropdowns on page load
+    //style.onchange(); // Populate the dropdowns on page load
 
     function sendValuesToJSX(render, outputPath) {
       //alert("Coletando valores dos elementos DOM...");
@@ -625,8 +625,8 @@
       }
 
       let listContent = `
-<div class="container mt-3 text-white">
-    <div class="row justify-content-center">
+      <div class="container mt-3 text-white">
+       <div class="row justify-content-center">
         <div class="col-md-10">
             <!-- Div da Imagem -->
             <div class="cropped-image-container mb-3 text-center">
@@ -674,8 +674,8 @@
             </div>
             <p class="text-center fs-7">Check the composition in the 'Output' folder</p>
         </div>
-    </div>
-</div>
+       </div>
+      </div>
 `;
 
       let listContent2 = `
