@@ -59,6 +59,7 @@
       } else if (windowsPlatforms.indexOf(platform) != -1) {
         os = "WIN";
       }
+
       return os;
     }
 
@@ -141,7 +142,7 @@
           </div>
 
           <div class="col-md-4">
-            <label for="state" class="form-label">Color Scheme</label>
+            <label class="form-label">Color Scheme</label>
             <select class="form-select" id="color_scheme" required>
 
             </select>
@@ -167,7 +168,7 @@
 
 
           <div class="col-md-4">
-            <label for="state" class="form-label">Aspect Ratio:</label>
+            <label class="form-label">Aspect Ratio:</label>
             <select class="form-select" id="aspect_ratio_select" disabled>
               <option value="16:9">16 : 9</option>
               <option value="9:16">9 : 16</option>
@@ -182,7 +183,7 @@
           </div>
 
           <div class="col-md-4">
-            <label for="country" class="form-label">Crop</label>
+            <label class="form-label">Crop</label>
             <select class="form-select" id="crop_select" required>
               <option value="100%">100%</option>
               <option value="200%">200%</option>
@@ -192,11 +193,12 @@
 
 
           <div class="col-md-4">
-            <label for="resolution_select" class="form-label">Resolution (width)</label>
+            <label class="form-label">Resolution (width)</label>
             <select class="form-select" id="resolution_select">
               <option value="2560">2560p</option>
               <option value="1920" selected>1920p</option>
               <option value="1080">1080p</option>
+              <option value="1024">1024p</option>
               <option value="720">720p</option>
             </select>
 
@@ -345,6 +347,19 @@
           </div>
         </div>
 
+        <div id="sliderWrapper" class="slider-wrapper">
+          <label for="xSlider">X:</label>
+          <input type="range" id="xSlider" min="0" max="100" value="0" />
+
+          <label for="ySlider">Y:</label>
+          <input type="range" id="ySlider" min="0" max="100" value="0" />
+
+          <label for="widthSlider">Width:</label>
+          <input type="range" id="widthSlider" min="0" max="100" value="100" />
+
+          <label for="heightSlider">Height:</label>
+          <input type="range" id="heightSlider" min="0" max="100" value="0" />
+        </div>
 
         <div class="image-container" style="height: auto;">
           <div>

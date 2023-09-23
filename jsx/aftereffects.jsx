@@ -7,13 +7,10 @@
   return false;
 }
 
-// Adicionar um listener para o evento de teste
-
+//importa a biblioteca
 function importAEPFile(Path, name) {
   var extensionPath = Path;
-  // alert(extensionPath);
   var filePath = new File(extensionPath + name + ".aep");
-  // alert(extensionPath);
   if (filePath) {
     // Verifica se a pasta "Library" já existe no projeto
     if (itemExistsInProject("Library")) {
@@ -21,12 +18,10 @@ function importAEPFile(Path, name) {
     } else {
       // Importa o arquivo .aep
       var importedFolder = app.project.importFile(new ImportOptions(filePath));
-
       // Move os itens da pasta importada para a raiz do projeto
       for (var i = importedFolder.numItems; i > 0; i--) {
         importedFolder.item(i).parentFolder = app.project.rootFolder;
       }
-
       // Exclui a pasta vazia
       importedFolder.remove();
     }
@@ -35,22 +30,29 @@ function importAEPFile(Path, name) {
   }
 }
 
-function deepDuplicateComp(comp, styleSuffix) {
-  // Duplica a composição
+function deepDuplicateComp(comp, styleSuffix, ConocoFolder) {
   var duplicatedComp = comp.duplicate();
-
   if (styleSuffix) {
     duplicatedComp.name = styleSuffix;
   }
-
-  // Itera sobre todas as camadas da composição duplicada
   for (var i = 1; i <= duplicatedComp.numLayers; i++) {
     var layer = duplicatedComp.layer(i);
-
-    // Se a camada for uma pré-composição, duplica essa pré-composição também
     if (layer.source instanceof CompItem) {
-      var duplicatedLayerComp = deepDuplicateComp(layer.source);
+      var duplicatedLayerComp = deepDuplicateComp(layer.source, null, ConocoFolder);
+
       layer.replaceSource(duplicatedLayerComp, false);
+
+      var outputFolder = findItemByName("Output", ConocoFolder);
+
+      if (!outputFolder) {
+        outputFolder = ConocoFolder.items.addFolder("Output");
+      }
+
+      var baseFolder = findItemByName("Base", outputFolder);
+      if (!baseFolder) {
+        baseFolder = outputFolder.items.addFolder("Base");
+      }
+      duplicatedLayerComp.parentFolder = baseFolder;
     }
   }
 
@@ -58,15 +60,6 @@ function deepDuplicateComp(comp, styleSuffix) {
 }
 
 function hideLayersByName(comp, layerName) {
-  for (var i = 1; i <= comp.numLayers; i++) {
-    var layer = comp.layer(i);
-    if (layer.name === layerName) {
-      layer.enabled = false; // Oculta a camada
-    }
-  }
-}
-
-function changeColorLayer(comp, layerName) {
   for (var i = 1; i <= comp.numLayers; i++) {
     var layer = comp.layer(i);
     if (layer.name === layerName) {
@@ -110,6 +103,15 @@ function openComposition(comp) {
   } else {
     alert("Erro ao abrir a composição.");
   }
+}
+
+function findCompByName(name) {
+  for (var i = 1; i <= app.project.numItems; i++) {
+    if (app.project.item(i) instanceof CompItem && app.project.item(i).name === name) {
+      return app.project.item(i);
+    }
+  }
+  return null;
 }
 
 function moveKeyframes(compName, layerName, offsetTime) {
@@ -164,19 +166,13 @@ function moveKeyframes(compName, layerName, offsetTime) {
 }
 
 // Esta função busca uma composição pelo nome
-function findCompByName(name) {
-  for (var i = 1; i <= app.project.numItems; i++) {
-    if (app.project.item(i) instanceof CompItem && app.project.item(i).name === name) {
-      return app.project.item(i);
-    }
-  }
-  return null;
-}
 
-function findItemByName(name) {
-  var numItems = app.project.numItems;
+function findItemByName(name, parent) {
+  parent = parent || app.project; // Set default value if parent is not provided
+  var numItems = parent.numItems;
   for (var i = 1; i <= numItems; i++) {
-    var currentItem = app.project.item(i);
+    var currentItem = parent.item(i);
+    //alert(currentItem.name);
     if (currentItem.name === name) {
       return currentItem;
     }
@@ -185,11 +181,8 @@ function findItemByName(name) {
 }
 
 function duplicatePrecompToOutput(values) {
-  var precompName = values.style + " " + values.colorScheme;
   var customDuration = parseFloat(values.duration);
-
   var path = values.path + "/library/";
-
   var Name = "Template_Library";
   var resolution = parseFloat(values.resolution);
   var roi = values.roi;
@@ -199,90 +192,60 @@ function duplicatePrecompToOutput(values) {
   importAEPFile(path, Name);
 
   //alert(values.resolution);
-
   var ConocoFolder = findItemByName("Conoco");
   if (!ConocoFolder || !(ConocoFolder instanceof FolderItem)) {
-    alert("Pasta 'Conoco' não encontrada! Criando uma nova...");
+    alert("Folder 'Conoco' not found! Creating a new one...");
     ConocoFolder = app.project.items.addFolder("Conoco");
   }
-  var libraryFolder = findItemByName("Library", ConocoFolder); // Em seguida, procuramos a pasta "Library" dentro de "ASD"
 
+  var libraryFolder = findItemByName("Library", ConocoFolder);
   if (!libraryFolder || !(libraryFolder instanceof FolderItem)) {
-    alert("Pasta 'Library' não encontrada!");
+    alert("Folder 'Library' not found!");
     return;
   }
-  // Procura a subpasta correta dentro da pasta "Library" com base em values.style
+
   var styleFolder;
+  var precompName;
+  var firstWord = values.colorScheme.split(" ")[0];
   switch (values.style) {
     case "Solid Mark Motif":
-      precompName = values.style + " " + values.colorScheme;
       styleFolder = findItemByName("Solid Mark Motif", libraryFolder);
-      // alert(precompName);
+      var precompName = values.style + " " + values.colorScheme;
       break;
     case "Linear Mark Motif":
-      var firstWord = values.colorScheme.split(" ")[0];
-      precompName = values.style + " " + firstWord;
-      styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
-      // alert(precompName);
-
-      if (values.version === "Main") {
-        var firstWord = values.colorScheme.split(" ")[0];
-        precompName = values.style + " " + firstWord;
-        styleFolder = findItemByName("Linear Mark Motif", libraryFolder);
-      } else {
-        var firstWord = values.colorScheme.split(" ")[0];
-        precompName = values.style + " " + firstWord;
-        styleFolder = findItemByName("Linear Mark Motif Text Frame", libraryFolder);
-      }
-
+      styleFolder =
+        values.version === "Main"
+          ? findItemByName("Linear Mark Motif", libraryFolder)
+          : findItemByName("Linear Mark Motif Text Frame", libraryFolder);
+      var precompName = values.style + " " + firstWord;
       break;
     case "3D":
-      styleFolder = findItemByName("3D", libraryFolder);
-
-      var folder10 = findItemByName(values.duration, styleFolder);
-      //alert(values.duration);
-
-      styleFolder = folder10;
-      precompName = values.style + " " + values.duration + " " + aspectRatio;
-      // alert(precompName);
+      styleFolder = findItemByName(values.duration, findItemByName("3D", libraryFolder));
+      var precompName = values.style + " " + values.duration + " " + aspectRatio;
       break;
     case "Ribbon":
-      // alert("1");
-      styleFolder = findItemByName("Ribbon", libraryFolder);
-      // alert("2");
-      var folder11 = findItemByName(values.duration, styleFolder);
-      // alert("3");
+      styleFolder = findItemByName(values.duration, findItemByName("Ribbon", libraryFolder));
 
-      styleFolder = folder11;
-      // alert("4");
-      precompName = values.style + " " + values.duration + " " + aspectRatio;
-
-      // alert("5");
-
+      var precompName = values.style + " " + values.duration + " " + aspectRatio;
       break;
+    default:
+      alert("Unknown style: " + values.style);
+      return;
   }
 
-  // alert(precompName);
+  // var precompName = values.style + " " + firstWord + (values.duration ? values.duration + " " : "") + aspectRatio;
 
   if (!styleFolder || !(styleFolder instanceof FolderItem)) {
-    alert("Subpasta correspondente a '" + values.style + "' não encontrada na pasta 'Library'!");
+    alert("Subfolder corresponding to '" + values.style + "' not found in the 'Library' folder!");
     return;
   }
 
-  // Busca a composição dentro da subpasta correta
-  var precompItem = null;
-  for (var i = 1; i <= styleFolder.numItems; i++) {
-    var item = styleFolder.item(i);
-    // alert(item.name);
-    if (item.name === precompName && item instanceof CompItem) {
-      precompItem = item;
-      break;
-    }
-  }
-
-  if (!precompItem) {
-    alert("Pré-composição '" + precompName + "' não encontrada na pasta '" + values.style + "'!");
+  var precompItem = findItemByName(precompName, styleFolder);
+  if (!precompItem || !(precompItem instanceof CompItem)) {
+    alert("Pre-composition '" + precompName + "' not found in the '" + values.style + "' folder!");
     return;
+  } else {
+    // alert("Comp Encontrada");
   }
 
   var sufix = values.fileName;
@@ -336,7 +299,7 @@ function duplicatePrecompToOutput(values) {
       Color01: [0x27 / 255, 0x62 / 255, 0x30 / 255], // 276230
       Color02: [0xbd / 255, 0xd3 / 255, 0x20 / 255], // BDD320
     },
-    Furchsia: {
+    Fuchsia: {
       BG: [0x68 / 255, 0x04 / 255, 0x51 / 255], // 680451
       Color01: [0x97 / 255, 0x00 / 255, 0x77 / 255], // 970077
       Color02: [0xe8 / 255, 0x46 / 255, 0xd6 / 255], // E846D6
@@ -371,9 +334,9 @@ function duplicatePrecompToOutput(values) {
         hideLayersByName(duplicatedPrecomp, "Line 01");
         hideLayersByName(duplicatedPrecomp, "Line 02");
         hideLayersByName(duplicatedPrecomp, "Line 03");
-        hideLayersByName(duplicatedPrecomp, "Variable - Color 01");
-        hideLayersByName(duplicatedPrecomp, "Variable - Color 02");
-        hideLayersByName(duplicatedPrecomp, "Variable - Color 03");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 04");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 05");
+        hideLayersByName(duplicatedPrecomp, "Variable - Color 06");
       }
       if (values.switchAlpha) {
         hideLayersByName(duplicatedPrecomp, "bg");
@@ -382,7 +345,6 @@ function duplicatePrecompToOutput(values) {
       break;
     case "Linear Mark Motif":
       var thirdWord = values.colorScheme.split(" ")[3];
-
       var offsetTime = customDuration - 5;
 
       moveKeyframes(duplicatedPrecomp.name, "Line 01", offsetTime);
@@ -399,6 +361,7 @@ function duplicatePrecompToOutput(values) {
       }
 
       break;
+
     case "3D":
       var thirdWord = values.colorScheme.split(" ")[3];
       var firstWord = values.colorScheme.split(" ")[0]; //Red
@@ -408,11 +371,7 @@ function duplicatePrecompToOutput(values) {
 
       var layer = duplicatedPrecomp.layer("BG - Color");
       var colorProperty = layer.property("Contents").property("Rectangle 1").property("Contents").property("Fill 1").property("Color");
-      // var propertiesList = "";
-      // for (var i = 1; i <= colorProperty.numProperties; i++) {
-      //   var currentProperty = colorProperty.property(i);
-      //   propertiesList += currentProperty.name + ": " + currentProperty.value + "\n";
-      // }
+
       var newColor = colorMapping[firstWord].BG;
       colorProperty.setValue(newColor);
 
@@ -427,26 +386,23 @@ function duplicatePrecompToOutput(values) {
 
       break;
     case "Ribbon":
-      alert(propertiesList);
       var thirdWord = values.colorScheme.split(" ")[3];
       var firstWord = values.colorScheme.split(" ")[0]; //Red
       var layerName = firstWord + " " + values.version;
-
       showLayersByName(duplicatedPrecomp, layerName);
 
-      var layer = duplicatedPrecomp.layer("Ribbon 10 Base");
-      var colorProperty = layer.property("Effects").property("Tint");
+      var layer2 = duplicatedPrecomp.layer("BG - Color");
+      var colorProperty = layer2.property("Contents").property("Rectangle 1").property("Contents").property("Fill 1").property("Color");
+      var layer = duplicatedPrecomp.layer(1);
+      var tintEffect = layer.effect("Tint");
 
-      var propertiesList = "";
-      for (var i = 1; i <= colorProperty.numProperties; i++) {
-        var currentProperty = colorProperty.property(i);
-        propertiesList += currentProperty.name + ": " + currentProperty.value + "\n";
-      }
+      var mapBlackTo = tintEffect.property("Map Black To");
+      var mapWhiteTo = tintEffect.property("Map White To");
 
-      alert(propertiesList);
+      mapBlackTo.setValue(colorMapping[firstWord].Color01);
+      mapWhiteTo.setValue(colorMapping[firstWord].Color02);
 
-      var newColor = colorMapping[firstWord].BG;
-      colorProperty.setValue(newColor);
+      colorProperty.setValue(colorMapping[firstWord].BG);
 
       if (thirdWord === "White") {
         hideLayersByName(duplicatedPrecomp, "BG - Color");
@@ -463,12 +419,10 @@ function duplicatePrecompToOutput(values) {
   // Estende a duração da composição duplicada e suas camadas para o tempo personalizado
   extendCompAndLayersToCustomTime(duplicatedPrecomp, customDuration);
 
-  // Mover a composição duplicada para a pasta "Output"
   var outputFolder = findItemByName("Output", ConocoFolder);
   if (!outputFolder) {
     outputFolder = ConocoFolder.items.addFolder("Output");
   }
-
   duplicatedPrecomp.parentFolder = outputFolder;
 
   ScaleCompositionByWidth(duplicatedPrecomp, resolution);
@@ -506,7 +460,7 @@ function duplicatePrecompToOutput(values) {
 
 function ScaleCompositionByWidth(compToScale, newWidth) {
   if (!compToScale || !(compToScale instanceof CompItem)) {
-    alert("Composição não fornecida ou inválida.");
+    alert("Composition not provided or invalid.");
     return;
   }
 
@@ -597,13 +551,6 @@ function renderComposition(comp, renderSettings, outputSettings) {
   // Adiciona a composição à fila de renderização
   var renderQueueItem = app.project.renderQueue.items.add(comp);
 
-  // // Envie um evento para o painel HTML indicando que a renderização começou
-  // var startEvent = new CSEvent("renderProgress", "APPLICATION");
-  // startEvent.data = "start";
-  // csInterface.dispatchEvent(startEvent);
-  //alert("Iniciando Renderização, aguarde......");
-
-  // Configura as Configurações de Renderização
   if (renderSettings) {
     if (renderSettings.timeSpan) renderQueueItem.timeSpan = renderSettings.timeSpan;
     if (renderSettings.quality) renderQueueItem.quality = renderSettings.quality;
@@ -625,12 +572,6 @@ function renderComposition(comp, renderSettings, outputSettings) {
 
   // Inicia a renderização
   app.project.renderQueue.render();
-  // alert("Render Concluído");
-
-  // Envie um evento para o painel HTML indicando que a renderização foi concluída
-  // var completeEvent = new CSEvent("renderProgress", "APPLICATION");
-  // completeEvent.data = "complete";
-  // csInterface.dispatchEvent(completeEvent);
 
   return 100;
 }

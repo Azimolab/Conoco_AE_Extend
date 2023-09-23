@@ -1,5 +1,7 @@
 (function () {
   ("use strict");
+  const sliderWrapper = document.getElementById("sliderWrapper");
+
   var path, slash;
   path = location.href;
   if (getOS() == "MAC") {
@@ -30,6 +32,11 @@
   const resolution = document.getElementById("resolution_select");
   const fileNameInput = document.getElementById("FileNameInput");
 
+  const widthSlider = document.getElementById("widthSlider");
+  const heightSlider = document.getElementById("heightSlider");
+  const xSlider = document.getElementById("xSlider");
+  const ySlider = document.getElementById("ySlider");
+
   let cropper;
   var csInterface = new CSInterface();
   var rduration = true;
@@ -44,6 +51,7 @@
   document.getElementById("customRange1").addEventListener("input", function () {
     updateValue(this.value);
   });
+
   document.getElementById("cc-name").addEventListener("input", function () {
     updateRange(this.value);
   });
@@ -72,6 +80,7 @@
     }
     document.getElementById("customRange1").value = newValue;
     document.getElementById("cc-name").value = newValue; // Note: Este elemento "cc-name" não está incluído no HTML fornecido. Certifique-se de que ele exista em seu código.
+    updateFileNameInput();
   }
 
   function updateRange(newValue) {
@@ -98,7 +107,7 @@
 
   const AR4 = {
     "16:9": { x: 140, y: 279, width: 398, aspectRatio: 16 / 9 },
-    "9:16": { x: 260, y: 0, width: 292, aspectRatio: 9 / 16 },
+    "9:16": { x: 250, y: 0, width: 292, aspectRatio: 9 / 16 },
     "2:3": { x: 172, y: 280, width: 137, aspectRatio: 2 / 3 },
     "4:3": { x: 128, y: 216, width: 378, aspectRatio: 4 / 3 },
     "21:9": { x: 157, y: 316, width: 434, aspectRatio: 21 / 9 },
@@ -125,9 +134,6 @@
     "9:21": { x: 446, y: 29, width: 217, aspectRatio: 9 / 21 },
     "1:1": { x: 370, y: 53, width: 385, aspectRatio: 1 },
   };
-
-  // Images data
-  // The data object has been truncated for brevity
 
   var imagesData = {
     "Solid Mark Motif": {
@@ -336,19 +342,32 @@
       const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.5;
       console.log(cropScale);
       console.log(cropData);
+
+      widthSlider.disabled = false;
+      heightSlider.disabled = false;
+      xSlider.disabled = false;
+      ySlider.disabled = false;
+
       cropper = new Cropper(image, {
         viewMode: 3,
         zoomable: false,
         aspectRatio: cropData.aspectRatio,
         highlight: false,
         guides: !lock,
-        cropBoxResizable: !lock,
+        cropBoxResizable: getOS() === "MAC" ? false : !lock,
         center: !lock,
+
         crop: function (event) {
           data.textContent = JSON.stringify(cropper.getData(true));
+          updateSliders(cropper.getData(true));
         },
         ready: function () {
           let cropData = imageData.data[aspectRatio];
+
+          if (getOS() == "MAC") {
+            sliderWrapper.style.display = "block";
+          }
+
           const cropScale = cropOption === "100%" ? 1 : cropOption === "200%" ? 0.7 : 0.5;
 
           let newWidth = cropData.width * cropScale;
@@ -360,16 +379,25 @@
             cropData.y = (image.naturalHeight - newHeight) / 2;
           }
 
-          cropper.setData({
-            x: cropData.x,
-            y: cropData.y,
-            width: newWidth,
-            height: newHeight,
-          });
+          cropper.setData(
+            {
+              x: cropData.x,
+              y: cropData.y,
+              width: newWidth,
+              height: newHeight,
+            },
+            () => {
+              updateSliders(cropData);
+            }
+          );
 
           // If lock is true, disable the cropper
           if (lock) {
             cropper.disable();
+            widthSlider.disabled = true;
+            heightSlider.disabled = true;
+            xSlider.disabled = true;
+            ySlider.disabled = true;
           }
         },
         cropmove: function (event) {
@@ -380,24 +408,59 @@
 
     image.src = imageData.img;
   }
-  // Verifique se todos os campos estão preenchidos
-  function checkInputs() {
-    let allFilled = true;
-    inputs.forEach((input) => {
-      if (input.value === "") {
-        allFilled = false;
-      }
-    });
 
-    // Se todos os campos estiverem preenchidos, habilite os botões. Caso contrário, desabilite-os
-    if (allFilled) {
-      createCompositionBtn.disabled = false;
-      exportBtn.disabled = false;
-    } else {
-      createCompositionBtn.disabled = true;
-      exportBtn.disabled = true;
-    }
+  function updateSliders(cropData) {
+    const aspectRatio = cropData.width / cropData.height;
+    const maxCropWidthByHeight = image.naturalHeight * aspectRatio;
+
+    // Escolha o menor valor entre a largura disponível baseada na posição x e a largura baseada na altura disponível
+    const maxCropWidth = Math.min(image.naturalWidth - cropData.x, maxCropWidthByHeight);
+    const maxCropHeight = image.naturalHeight - cropData.y;
+
+    widthSlider.max = maxCropWidth;
+    widthSlider.value = cropData.width;
+
+    heightSlider.max = maxCropHeight;
+    heightSlider.value = cropData.height;
+
+    xSlider.max = image.naturalWidth - cropData.width;
+    xSlider.value = cropData.x;
+
+    ySlider.max = image.naturalHeight - cropData.height;
+    ySlider.value = cropData.y;
   }
+
+  xSlider.addEventListener("input", function () {
+    const currentData = cropper.getData(true);
+    currentData.x = parseInt(this.value, 10);
+    cropper.setData(currentData);
+    updateSliders(currentData); // Atualize os sliders após ajustar o x
+  });
+
+  ySlider.addEventListener("input", function () {
+    const currentData = cropper.getData(true);
+    currentData.y = parseInt(this.value, 10);
+    cropper.setData(currentData);
+    updateSliders(currentData); // Atualize os sliders após ajustar o y
+  });
+
+  widthSlider.addEventListener("input", function () {
+    const currentData = cropper.getData(true);
+    const aspect = currentData.width / currentData.height;
+    currentData.width = parseInt(this.value, 10);
+    currentData.height = currentData.width / aspect;
+    cropper.setData(currentData);
+    updateSliders(currentData); // Atualize os sliders após ajustar a largura
+  });
+
+  heightSlider.addEventListener("input", function () {
+    const currentData = cropper.getData(true);
+    const aspect = currentData.width / currentData.height;
+    currentData.height = parseInt(this.value, 10);
+    currentData.width = currentData.height * aspect;
+    cropper.setData(currentData);
+    updateSliders(currentData); // Atualize os sliders após ajustar a altura
+  });
 
   function checkAlpha() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
@@ -413,20 +476,9 @@
     // console.log(chosenData.alpha);
   }
 
-  // Função que será chamada sempre que o checkbox for alterado
-  function handleCheckboxChange(event) {
-    if (event.target.checked) {
-      console.log("Checkbox marcado");
-    } else {
-      // Checkbox foi desmarcado
-      console.log("Checkbox desmarcado");
-    }
-    checkAlpha();
-  }
-
   // Adiciona o evento de "change" ao checkbox
-  mp4Radio.addEventListener("change", handleCheckboxChange);
-  movRadio.addEventListener("change", handleCheckboxChange);
+  mp4Radio.addEventListener("change", checkAlpha);
+  movRadio.addEventListener("change", checkAlpha);
 
   function updateRdurationSettings() {
     const chosenData = imagesData[style.value][version.value][color_scheme.value];
@@ -455,9 +507,9 @@
   }
 
   // Ouve eventos de alteração em todos os campos de entrada
-  inputs.forEach((input) => {
-    input.addEventListener("change", checkInputs);
-  });
+  // inputs.forEach((input) => {
+  //   input.addEventListener("change", checkInputs);
+  // });
 
   // Event listeners
   window.onload = function () {
@@ -466,10 +518,42 @@
     //openExplorerOrFinder(outputPath);
 
     populateDropdown(style, Object.keys(imagesData));
+    populateDropdown(version, Object.keys(imagesData[style.value]));
+    populateDropdown(color_scheme, Object.keys(imagesData[style.value][version.value]));
     // checkInputs;
+    // checkInputs;
+    console.log(style.value);
+
+    var globalStyle = style.value;
+    var ribbon3D = false;
 
     style.onchange = function () {
-      populateDropdown(version, Object.keys(imagesData[this.value]));
+      //console.log("style.value " + style.value);
+      // console.log("globalStyle anterior " + globalStyle);
+
+      if (globalStyle != style.value) {
+        if (style.value === "3D" || style.value === "Ribbon") {
+          if (ribbon3D === false) {
+            console.log("ribbon false");
+            populateDropdown(version, Object.keys(imagesData[this.value]));
+            populateDropdown(color_scheme, Object.keys(imagesData[style.value][version.value]));
+
+            ribbon3D = true;
+          } else {
+            populateDropdown(version, Object.keys(imagesData[this.value]));
+          }
+        }
+
+        if (style.value === "Solid Mark Motif" || style.value === "Linear Mark Motif") {
+          populateDropdown(version, Object.keys(imagesData[this.value]));
+          populateDropdown(color_scheme, Object.keys(imagesData[style.value][version.value]));
+          ribbon3D = false;
+        }
+
+        globalStyle = style.value;
+        // console.log("globalStyle now " + globalStyle);
+      }
+
       version.onchange();
       switch_alpha.onchange();
       //checkAlpha();
@@ -478,7 +562,6 @@
     };
 
     version.onchange = function () {
-      populateDropdown(color_scheme, Object.keys(imagesData[style.value][this.value]));
       color_scheme.onchange();
       //checkAlpha();
       //switch_alpha.onchange();
@@ -517,6 +600,7 @@
       }
 
       switch_alpha.onchange();
+      updateFileNameInput();
       //initCropper(chosenData, aspectRatio, lock, cropOption);
     };
 
@@ -528,6 +612,7 @@
       //console.log(aspectRatio);
       // checkAlpha();
       switch_alpha.onchange();
+      updateFileNameInput();
       // initCropper(chosenData, aspectRatio, lock, cropOption);
     };
 
@@ -565,7 +650,7 @@
       }
 
       //  console.log(selectedData);
-
+      updateFileNameInput();
       initCropper(selectedData, aspectRatio, lock, cropOption);
     };
 
@@ -573,6 +658,7 @@
       // Actions to be performed on resolution change can be added here
       //  console.log("Resolution changed to: " + this.value);
       // For now, just logging the change to the console
+      updateFileNameInput();
     };
 
     style.onchange(); // Populate the dropdowns on page load
@@ -813,7 +899,27 @@
   }
 
   function updateFileNameInput() {
-    fileNameInput.value = style.value + " " + version.value + " " + color_scheme.value;
+    var firstName = style.value;
+    var aspectRatio = aspect_ratio_select.value.replace(":", "x");
+    var duration = document.getElementById("customRange1").value;
+    var colorValue = color_scheme.value.replace(" +", "").replace("only", "").replace(" BG", "").trim();
+    var vers = version.value.replace("Without Lines", "wL").replace("With Lines", "L").replace("Main", "M").replace("Text Frame", "TF").trim();
+
+    var alphaName;
+    if (switch_alpha.checked === true) {
+      alphaName = " Alpha";
+    } else {
+      alphaName = "";
+    }
+    console.log(switch_alpha.checked);
+    if (firstName === "Solid Mark Motif") {
+      firstName = "SMM";
+    }
+    if (firstName === "Linear Mark Motif") {
+      firstName = "LMM";
+    }
+
+    fileNameInput.value = firstName + " " + vers + " " + colorValue + alphaName + " " + aspectRatio + " " + duration + "s " + resolution.value;
   }
 
   function addProgressBar() {
@@ -837,8 +943,4 @@
     const modalBody = document.querySelector(".modal-body");
     modalBody.appendChild(progressBarContainer);
   }
-
-  // Chame a função quando necessário
-
-  // Chame a função quando necessário
 })();

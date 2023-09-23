@@ -36,6 +36,11 @@ body {
   width: 100%;
 }
 
+#sliderWrapper {
+  display: none;
+  margin-bottom: 10px;
+}
+
 #sliderTicks {
   display: flex;
   justify-content: space-between;
