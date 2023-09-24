@@ -704,7 +704,7 @@
           //csInterface.evalScript("system.callSystem('cmd.exe /c start explorer .')");
         } else if (os.indexOf("Mac") !== -1) {
           // Para macOS
-          csInterface.evalScript("system.callSystem('open .')");
+          window.cep.process.createProcess("/usr/bin/open", paths);
         }
       }
 
@@ -713,11 +713,19 @@
       }
 
       function openDirectory() {
+        var os = csInterface.getOSInformation();
         var path = outputPath;
-        var lastSlashIndex = path.lastIndexOf("\\");
+        var lastSlashIndex;
+
+        if (os.indexOf("Mac") !== -1) {
+          lastSlashIndex = path.lastIndexOf("/");
+        } else if (os.indexOf("Windows") !== -1) {
+          lastSlashIndex = path.lastIndexOf("\\");
+        }
         if (lastSlashIndex !== -1) {
           path = path.substring(0, lastSlashIndex);
         }
+
         openExplorerOrFinder(path);
       }
 
