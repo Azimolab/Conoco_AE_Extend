@@ -861,6 +861,11 @@
         }
       });
     }
+    createCompositionBtn.addEventListener("click", function () {
+      showModalWithMessage("Creating composition", "Awaiting....", true);
+      sendValuesToJSX(false);
+    });
+
 
     function showModalWithMessage(title, message, showProgress = true) {
       document.querySelector(".modal-body").innerHTML = message; // Isso limpará o conteúdo anterior
@@ -871,12 +876,9 @@
       }
       document.querySelector(".modal-title").textContent = title;
       modal.show();
+      //alert("3")
     }
 
-    createCompositionBtn.addEventListener("click", function () {
-      showModalWithMessage("Creating composition", "Awaiting....", true);
-      sendValuesToJSX(false);
-    });
 
     exportBtn.addEventListener("click", function () {
       const desiredFileName = fileNameInput.value; // Recupera o valor do input
@@ -885,11 +887,16 @@
 
       // Passe o desiredFileName como um argumento adicional
       csInterface.evalScript(`chooseOutputPath("${fileType}", "${desiredFileName}")`, function (outputPath) {
+        
         if (outputPath !== "null") {
           var msg2 = "Please wait and do not use the program until the process is complete.";
-
-          sendValuesToJSX(true, outputPath);
           showModalWithMessage("Rendering in progress...", msg2, true);
+          
+          setTimeout(() => {
+            sendValuesToJSX(true, outputPath);
+          }, 1000);
+         
+          
         } else {
           console.log("Seleção de caminho cancelada pelo usuário.");
         }
